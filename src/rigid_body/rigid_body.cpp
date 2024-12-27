@@ -3,12 +3,14 @@
 RigidBody::RigidBody(float mass, float rotation,
                      const flatmath::Vector2 &position,
                      const flatmath::Vector2 &velocity,
-                     const flatmath::Vector2 &force)
+                     const flatmath::Vector2 &force,
+                     int scale)
     : m_mass(mass),
       m_rotation(rotation),
       m_position(position),
       m_velocity(velocity),
-      m_force(force)
+      m_force(force),
+      m_scale(scale)
 {
 }
 float RigidBody::getMass() const
@@ -30,6 +32,10 @@ flatmath::Vector2 RigidBody::getVelocity() const
 flatmath::Vector2 RigidBody::getForce() const
 {
     return m_force;
+}
+int RigidBody::getScale() const
+{
+    return m_scale;
 }
 void RigidBody::step(float dt)
 {

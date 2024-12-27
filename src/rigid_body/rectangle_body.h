@@ -10,5 +10,9 @@ public:
     RectangleBody(float mass, float rotation, const flatmath::Vector2 &position,
                   const flatmath::Vector2 &velocity, const flatmath::Vector2 &force,
                   float length, float height, int scale);
+    RectangleBody(const RectangleBody &other);
+    float getLength() const;
+    float getHeight() const;
     void loadShape(int scale) override;
+    std::unique_ptr<RigidBody> cloneIntoPtr() const override;
 };
