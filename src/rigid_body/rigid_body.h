@@ -24,6 +24,7 @@ public:
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
     int getScale() const;
+    void move(const flatmath::Vector2 &vec);
     void step(float dt);
     void draw(sf::RenderWindow &window);
     virtual void loadShape(int scale) = 0;

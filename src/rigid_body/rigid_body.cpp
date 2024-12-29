@@ -37,6 +37,10 @@ int RigidBody::getScale() const
 {
     return m_scale;
 }
+void RigidBody::move(const flatmath::Vector2 &vec)
+{
+    m_position += vec;
+}
 void RigidBody::step(float dt)
 {
     m_velocity += m_force * (1 / m_mass) * dt;
