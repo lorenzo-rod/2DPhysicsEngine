@@ -13,6 +13,9 @@ public:
     RectangleBody(const RectangleBody &other);
     float getLength() const;
     float getHeight() const;
+    float getShapeLength() const;
+    float getShapeHeight() const;
+    void getVertices(std::array<flatmath::Vector2, 4> &vertices) const;
     void loadShape(int scale) override;
     std::unique_ptr<RigidBody> cloneIntoPtr() const override;
 };

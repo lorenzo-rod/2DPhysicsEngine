@@ -17,6 +17,7 @@ class PhysicsWorld
 public:
     void addRigidBody(const RigidBody &rigid_body);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
+    void getNormals(std::array<flatmath::Vector2, 4> &normals, const std::array<flatmath::Vector2, 4> &vertices) const;
     void resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_body_b);
     void resolveCollision(CircleBody &circle_a, CircleBody &circle_b);
     void resolveCollision(CircleBody &circle, RectangleBody &rectangle);

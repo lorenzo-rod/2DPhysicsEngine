@@ -35,30 +35,32 @@ int main()
     // t3.rotate(90);
     // shape3.setOrigin(100.f, 100.f);
     PhysicsWorld physics_world;
-    for (int i = 0; i < 5; i++)
-    {
-        float mass = 1.f;
-        float rotation = 0.f;
-        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
-        flatmath::Vector2 velocity{};
-        flatmath::Vector2 force{};
-        float radius = 1.f;
-        CircleBody circle{mass, rotation, position, velocity, force, radius, 100};
-        physics_world.addRigidBody(circle);
-    }
-
-    // for (int i = 0; i < 2; i++)
+    // for (int i = 0; i < 5; i++)
     // {
     //     float mass = 1.f;
-    //     float rotation = 30.f;
+    //     float rotation = 0.f;
     //     flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
     //     flatmath::Vector2 velocity{};
     //     flatmath::Vector2 force{};
-    //     float length = 1.f;
-    //     float height = 1.f;
-    //     RectangleBody rectangle{mass, rotation, position, velocity, force, length, height, 100};
-    //     physics_world.addRigidBody(rectangle);
+    //     float radius = 1.f;
+    //     CircleBody circle{mass, rotation, position, velocity, force, radius, 100};
+    //     physics_world.addRigidBody(circle);
     // }
+
+    for (int i = 0; i < 2; i++)
+    {
+        float mass = 1.f;
+        float rotation = -120.f;
+        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
+        flatmath::Vector2 velocity{};
+        flatmath::Vector2 force{};
+        float length = 1.f;
+        float height = 1.f;
+        RectangleBody rectangle{mass, rotation, position, velocity, force, length, height, 100};
+        physics_world.addRigidBody(rectangle);
+    }
+
+    bool resolve = true;
 
     while (window.isOpen())
     {
@@ -67,36 +69,40 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            // else if (event.type == sf::Event::MouseButtonPressed)
-            // {
-            //     flatmath::Vector2 vec{event.mouseButton.x, event.mouseButton.y};
-            //     std::cout << vec << std::endl;
-            // }
-            if (event.type == sf::Event::KeyPressed)
+            else if (event.type == sf::Event::MouseButtonPressed)
             {
-                if (event.key.code == sf::Keyboard::W)
-                {
-                    physics_world.moveRigidBody(0, {0.f, -5.f});
-                }
-                if (event.key.code == sf::Keyboard::A)
-                {
-                    physics_world.moveRigidBody(0, {-5.f, 0.f});
-                }
-                if (event.key.code == sf::Keyboard::S)
-                {
-                    physics_world.moveRigidBody(0, {0.f, 5.f});
-                }
-                if (event.key.code == sf::Keyboard::D)
-                {
-                    physics_world.moveRigidBody(0, {5.f, 0.f});
-                }
+                flatmath::Vector2 vec{event.mouseButton.x, event.mouseButton.y};
+                std::cout << vec << std::endl;
             }
+            // if (event.type == sf::Event::KeyPressed)
+            // {
+            //     if (event.key.code == sf::Keyboard::W)
+            //     {
+            //         physics_world.moveRigidBody(0, {0.f, -5.f});
+            //     }
+            //     if (event.key.code == sf::Keyboard::A)
+            //     {
+            //         physics_world.moveRigidBody(0, {-5.f, 0.f});
+            //     }
+            //     if (event.key.code == sf::Keyboard::S)
+            //     {
+            //         physics_world.moveRigidBody(0, {0.f, 5.f});
+            //     }
+            //     if (event.key.code == sf::Keyboard::D)
+            //     {
+            //         physics_world.moveRigidBody(0, {5.f, 0.f});
+            //     }
+            // }
         }
 
         flatmath::Point2 p1{343.0f, 128.0f};
         flatmath::Point2 p2{834.0f, 100.0f};
         window.clear();
-        physics_world.resolveCollisions();
+        if (resolve)
+        {
+            physics_world.resolveCollisions();
+            resolve = false;
+        }
         for (const auto &rigid_body_ptr : physics_world)
         {
             rigid_body_ptr->draw(window);

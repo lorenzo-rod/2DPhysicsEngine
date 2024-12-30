@@ -26,6 +26,11 @@ float CircleBody::getRadius() const
     return m_radius;
 }
 
+float CircleBody::getShapeRadius() const
+{
+    return m_radius * m_scale;
+}
+
 void CircleBody::loadShape(int scale)
 {
     float shape_radius = m_radius * scale;

@@ -10,6 +10,15 @@ void PhysicsWorld::moveRigidBody(int index, const flatmath::Vector2 &vec)
     rigid_bodies_container.at(index)->move(vec);
 }
 
+void PhysicsWorld::getNormals(std::array<flatmath::Vector2, 4> &normals, const std::array<flatmath::Vector2, 4> &vertices) const
+{
+    for (int i = 0; i < 3; i++)
+    {
+        normals.at(i) = vertices.at(i) - vertices.at(i + 1);
+    }
+    normals.at(3) = vertices.at(3) - vertices.at(0);
+}
+
 iterator PhysicsWorld::begin()
 {
     return rigid_bodies_container.begin();
@@ -31,10 +40,16 @@ void PhysicsWorld::resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_bo
 {
     CircleBody *circle_body_a_ptr = dynamic_cast<CircleBody *>(&rigid_body_a);
     CircleBody *circle_body_b_ptr = dynamic_cast<CircleBody *>(&rigid_body_b);
+    RectangleBody *rectangle_body_a_ptr = dynamic_cast<RectangleBody *>(&rigid_body_a);
+    RectangleBody *rectangle_body_b_ptr = dynamic_cast<RectangleBody *>(&rigid_body_b);
 
     if (circle_body_a_ptr && circle_body_b_ptr)
     {
         resolveCollision(*circle_body_a_ptr, *circle_body_b_ptr);
+    }
+    else if (rectangle_body_a_ptr && rectangle_body_b_ptr)
+    {
+        resolveCollision(*rectangle_body_a_ptr, *rectangle_body_b_ptr);
     }
 
     // TO DO: Implement other collisions
@@ -69,7 +84,42 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle, CircleBody &circle
 
 void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b)
 {
-    // TO DO
+    std::array<flatmath::Vector2, 4> vertices_a = {flatmath::Vector2{0.0f, 0.0f},
+                                                   flatmath::Vector2{0.0f, 0.0f},
+                                                   flatmath::Vector2{0.0f, 0.0f},
+                                                   flatmath::Vector2{0.0f, 0.0f}};
+    std::array<flatmath::Vector2, 4> vertices_b = {flatmath::Vector2{0.0f, 0.0f},
+                                                   flatmath::Vector2{0.0f, 0.0f},
+                                                   flatmath::Vector2{0.0f, 0.0f},
+                                                   flatmath::Vector2{0.0f, 0.0f}};
+    std::array<flatmath::Vector2, 4> normals_sides_a = {flatmath::Vector2{0.0f, 0.0f},
+                                                        flatmath::Vector2{0.0f, 0.0f},
+                                                        flatmath::Vector2{0.0f, 0.0f},
+                                                        flatmath::Vector2{0.0f, 0.0f}};
+    std::array<flatmath::Vector2, 4> normals_sides_b = {flatmath::Vector2{0.0f, 0.0f},
+                                                        flatmath::Vector2{0.0f, 0.0f},
+                                                        flatmath::Vector2{0.0f, 0.0f},
+                                                        flatmath::Vector2{0.0f, 0.0f}};
+
+    rectangle_a.getVertices(vertices_a);
+    rectangle_b.getVertices(vertices_b);
+
+    getNormals(normals_sides_a, vertices_a);
+    getNormals(normals_sides_b, vertices_b);
+
+    // TO DO: Dot product shit
+
+    // for (const auto &vertex : vertices_a)
+    // {
+    //     std::cout << vertex << std::endl;
+    // }
+
+    // std::cout << std::endl;
+
+    // for (const auto &vertex : vertices_b)
+    // {
+    //     std::cout << vertex << std::endl;
+    // }
 }
 
 void PhysicsWorld::resolveCollisions()
