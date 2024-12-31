@@ -4,6 +4,7 @@
 #include "../rigid_body/circle_body.h"
 #include "../rigid_body/rectangle_body.h"
 #include <algorithm>
+#include <limits>
 
 namespace
 {
@@ -22,7 +23,9 @@ public:
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
     void getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const;
     bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &normal_arrays,
-                                const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices);
+                                const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
+                                flatmath::Vector2 &normal_for_resolution,
+                                float &distance);
     void resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_body_b);
     void resolveCollision(CircleBody &circle_a, CircleBody &circle_b);
     void resolveCollision(CircleBody &circle, RectangleBody &rectangle);

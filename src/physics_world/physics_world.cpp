@@ -20,7 +20,9 @@ void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals,
 }
 
 bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &normal_arrays,
-                                          const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices)
+                                          const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
+                                          flatmath::Vector2 &normal_for_resolution,
+                                          float &distance)
 {
     bool are_colliding = true;
     std::array<float, num_sides> projections_a;
@@ -29,6 +31,7 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
     float max_projection_a;
     float min_projection_b;
     float max_projection_b;
+    float new_distance;
 
     for (const auto &normal_array : normal_arrays)
     {
@@ -49,6 +52,15 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
             {
                 are_colliding = false;
                 return are_colliding;
+            }
+            else
+            {
+                new_distance = std::min(max_projection_b - min_projection_a, max_projection_a - min_projection_b);
+                if (new_distance < distance)
+                {
+                    distance = new_distance;
+                    normal_for_resolution = normal;
+                }
             }
         }
     }
@@ -125,6 +137,8 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
     std::array<flatmath::Vector2, num_sides> vertices_b;
     std::array<flatmath::Vector2, num_sides> normals_sides_a;
     std::array<flatmath::Vector2, num_sides> normals_sides_b;
+    flatmath::Vector2 normal_for_resolution;
+    float distance = std::numeric_limits<float>::max();
 
     rectangle_a.getVertices(vertices_a);
     rectangle_b.getVertices(vertices_b);
@@ -132,15 +146,18 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
     getNormals(normals_sides_a, vertices_a);
     getNormals(normals_sides_b, vertices_b);
 
-    if (checkCollisionsWithSAT({normals_sides_a, normals_sides_b}, {vertices_a, vertices_b}))
+    if (checkCollisionsWithSAT({normals_sides_a, normals_sides_b}, {vertices_a, vertices_b}, normal_for_resolution, distance))
     {
-        std::cout << "Object at "
-                  << rectangle_a.getPosition()
-                  << " colliding with object at "
-                  << rectangle_b.getPosition()
-                  << std::endl;
+        distance /= normal_for_resolution.modulus();
+        normal_for_resolution = normal_for_resolution.normalize();
 
-        // TO DO: Implement actual collision resolution
+        if (normal_for_resolution * (rectangle_b.getPosition() - rectangle_a.getPosition()) < 0.f)
+        {
+            normal_for_resolution = -normal_for_resolution;
+        }
+
+        rectangle_a.move(-(distance / 2) * normal_for_resolution);
+        rectangle_b.move((distance / 2) * normal_for_resolution);
     }
 }
 
