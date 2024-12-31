@@ -12,16 +12,16 @@ void PhysicsWorld::moveRigidBody(int index, const flatmath::Vector2 &vec)
 
 void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < (num_sides - 1); i++)
     {
         normals.at(i) = vertices.at(i) - vertices.at(i + 1);
     }
-    normals.at(3) = vertices.at(3) - vertices.at(0);
+    normals.at(num_sides - 1) = vertices.at(num_sides - 1) - vertices.at(0);
 }
 
 bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &normal_arrays,
                                           const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
-                                          flatmath::Vector2 &normal_for_resolution,
+                                          flatmath::Vector2 &axis_for_resolution,
                                           float &distance)
 {
     bool are_colliding = true;
@@ -32,6 +32,7 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
     float min_projection_b;
     float max_projection_b;
     float new_distance;
+    distance = std::numeric_limits<float>::max();
 
     for (const auto &normal_array : normal_arrays)
     {
@@ -59,7 +60,7 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
                 if (new_distance < distance)
                 {
                     distance = new_distance;
-                    normal_for_resolution = normal;
+                    axis_for_resolution = normal;
                 }
             }
         }
@@ -68,18 +69,104 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
     return are_colliding;
 }
 
+bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, num_sides> &normals,
+                                          const std::array<flatmath::Vector2, num_sides> &vertices,
+                                          const CircleBody &circle,
+                                          flatmath::Vector2 &axis_for_resolution,
+                                          float &distance)
+{
+    bool are_colliding = true;
+    std::array<float, 2> projections_circle;
+    std::array<float, num_sides> projections_rectangle;
+    float min_projection_circle;
+    float max_projection_circle;
+    float min_projection_rectangle;
+    float max_projection_rectangle;
+    float new_distance;
+    std::array<flatmath::Vector2, num_sides + 1> axes;
+    flatmath::Vector2 normalized_axis;
+    flatmath::Vector2 circle_position = circle.getPosition();
+    int i;
+    distance = std::numeric_limits<float>::max();
+
+    for (i = 0; i < num_sides; i++)
+    {
+        axes.at(i) = normals.at(i);
+    }
+
+    axes.at(num_sides) = (circle_position - vertices.at(getNearestVertexIndex(circle_position, vertices)));
+
+    for (const auto &axis : axes)
+    {
+        for (int i = 0; i < num_sides; i++)
+        {
+            projections_rectangle.at(i) = axis * vertices.at(i);
+        }
+
+        normalized_axis = axis.normalize();
+        projections_circle.at(0) = axis * (circle_position + (normalized_axis * circle.getShapeRadius()));
+        projections_circle.at(1) = axis * (circle_position - (normalized_axis * circle.getShapeRadius()));
+
+        min_projection_circle = *std::min_element(projections_circle.begin(), projections_circle.end());
+        max_projection_circle = *std::max_element(projections_circle.begin(), projections_circle.end());
+        min_projection_rectangle = *std::min_element(projections_rectangle.begin(), projections_rectangle.end());
+        max_projection_rectangle = *std::max_element(projections_rectangle.begin(), projections_rectangle.end());
+
+        if (min_projection_circle > max_projection_rectangle || min_projection_rectangle > max_projection_circle)
+        {
+            are_colliding = false;
+            return are_colliding;
+        }
+        else
+        {
+            new_distance = std::min(max_projection_rectangle - min_projection_circle,
+                                    max_projection_circle - min_projection_rectangle);
+            if (new_distance < distance)
+            {
+                distance = new_distance;
+                axis_for_resolution = axis;
+            }
+        }
+    }
+
+    return are_colliding;
+}
+
+int PhysicsWorld::getNearestVertexIndex(const flatmath::Vector2 &circle_position,
+                                        const std::array<flatmath::Vector2, num_sides> &vertices)
+{
+    int min_index = 0;
+    float min_distance = std::numeric_limits<float>::max();
+    float distance;
+
+    for (int i = 0; i < num_sides; i++)
+    {
+        distance = (circle_position - vertices.at(i)).modulus();
+        if (distance < min_distance)
+        {
+            min_distance = distance;
+            min_index = i;
+        }
+    }
+
+    return min_index;
+}
+
 iterator PhysicsWorld::begin()
 {
     return rigid_bodies_container.begin();
 }
+
 const_iterator PhysicsWorld::begin() const
 {
     return rigid_bodies_container.begin();
 }
+
 iterator PhysicsWorld::end()
 {
     return rigid_bodies_container.end();
 }
+
 const_iterator PhysicsWorld::end() const
 {
     return rigid_bodies_container.end();
@@ -100,8 +187,14 @@ void PhysicsWorld::resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_bo
     {
         resolveCollision(*rectangle_body_a_ptr, *rectangle_body_b_ptr);
     }
-
-    // TO DO: Implement other collisions
+    else if (circle_body_a_ptr && rectangle_body_b_ptr)
+    {
+        resolveCollision(*circle_body_a_ptr, *rectangle_body_b_ptr);
+    }
+    else
+    {
+        resolveCollision(*rectangle_body_a_ptr, *circle_body_b_ptr);
+    }
 
     return;
 }
@@ -123,12 +216,32 @@ void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
 
 void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle)
 {
-    // TO DO
+    std::array<flatmath::Vector2, num_sides> vertices;
+    std::array<flatmath::Vector2, num_sides> normals;
+    flatmath::Vector2 axis_for_resolution;
+    float distance;
+
+    rectangle.getVertices(vertices);
+    getNormals(normals, vertices);
+
+    if (checkCollisionsWithSAT(normals, vertices, circle, axis_for_resolution, distance))
+    {
+        distance /= axis_for_resolution.modulus();
+        axis_for_resolution = axis_for_resolution.normalize();
+
+        if (axis_for_resolution * (rectangle.getPosition() - circle.getPosition()) < 0.f)
+        {
+            axis_for_resolution = -axis_for_resolution;
+        }
+
+        circle.move(-(distance / 2) * axis_for_resolution);
+        rectangle.move((distance / 2) * axis_for_resolution);
+    }
 }
 
 void PhysicsWorld::resolveCollision(RectangleBody &rectangle, CircleBody &circle)
 {
-    // TO DO
+    resolveCollision(circle, rectangle);
 }
 
 void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b)
@@ -137,8 +250,8 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
     std::array<flatmath::Vector2, num_sides> vertices_b;
     std::array<flatmath::Vector2, num_sides> normals_sides_a;
     std::array<flatmath::Vector2, num_sides> normals_sides_b;
-    flatmath::Vector2 normal_for_resolution;
-    float distance = std::numeric_limits<float>::max();
+    flatmath::Vector2 axis_for_resolution;
+    float distance;
 
     rectangle_a.getVertices(vertices_a);
     rectangle_b.getVertices(vertices_b);
@@ -146,18 +259,18 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
     getNormals(normals_sides_a, vertices_a);
     getNormals(normals_sides_b, vertices_b);
 
-    if (checkCollisionsWithSAT({normals_sides_a, normals_sides_b}, {vertices_a, vertices_b}, normal_for_resolution, distance))
+    if (checkCollisionsWithSAT({normals_sides_a, normals_sides_b}, {vertices_a, vertices_b}, axis_for_resolution, distance))
     {
-        distance /= normal_for_resolution.modulus();
-        normal_for_resolution = normal_for_resolution.normalize();
+        distance /= axis_for_resolution.modulus();
+        axis_for_resolution = axis_for_resolution.normalize();
 
-        if (normal_for_resolution * (rectangle_b.getPosition() - rectangle_a.getPosition()) < 0.f)
+        if (axis_for_resolution * (rectangle_b.getPosition() - rectangle_a.getPosition()) < 0.f)
         {
-            normal_for_resolution = -normal_for_resolution;
+            axis_for_resolution = -axis_for_resolution;
         }
 
-        rectangle_a.move(-(distance / 2) * normal_for_resolution);
-        rectangle_b.move((distance / 2) * normal_for_resolution);
+        rectangle_a.move(-(distance / 2) * axis_for_resolution);
+        rectangle_b.move((distance / 2) * axis_for_resolution);
     }
 }
 
