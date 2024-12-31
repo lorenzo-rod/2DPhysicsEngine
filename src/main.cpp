@@ -1,7 +1,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include "math/vector2.h"
-#include "math/point2.h"
+#include "math/vector2.h"
 #include "rigid_body/circle_body.h"
 #include "rigid_body/rectangle_body.h"
 #include <vector>
@@ -10,8 +10,8 @@
 
 #define TO_DEGREES(X) ((X) * (180 / M_PI))
 
-void drawSegment(const flatmath::Point2 &p1, const flatmath::Point2 &p2, sf::RenderWindow &window);
-void drawRectangleFromPoints(const flatmath::Point2 &p1, const flatmath::Point2 &p2, sf::RenderWindow &window, float width);
+void drawSegment(const flatmath::Vector2 &p1, const flatmath::Vector2 &p2, sf::RenderWindow &window);
+void drawRectangleFromPoints(const flatmath::Vector2 &p1, const flatmath::Vector2 &p2, sf::RenderWindow &window, float width);
 float generateRandomFloat(float min, float max);
 
 int main()
@@ -35,18 +35,6 @@ int main()
     // t3.rotate(90);
     // shape3.setOrigin(100.f, 100.f);
     PhysicsWorld physics_world;
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     float mass = 1.f;
-    //     float rotation = 0.f;
-    //     flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
-    //     flatmath::Vector2 velocity{};
-    //     flatmath::Vector2 force{};
-    //     float radius = 1.f;
-    //     CircleBody circle{mass, rotation, position, velocity, force, radius, 100};
-    //     physics_world.addRigidBody(circle);
-    // }
-
     for (int i = 0; i < 5; i++)
     {
         float mass = 1.f;
@@ -58,6 +46,17 @@ int main()
         float height = 1.f;
         RectangleBody rectangle{mass, rotation, position, velocity, force, length, height, 100};
         physics_world.addRigidBody(rectangle);
+    }
+    for (int i = 0; i < 5; i++)
+    {
+        float mass = 1.f;
+        float rotation = 0.f;
+        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
+        flatmath::Vector2 velocity{};
+        flatmath::Vector2 force{};
+        float radius = 1.f;
+        CircleBody circle{mass, rotation, position, velocity, force, radius, 100};
+        physics_world.addRigidBody(circle);
     }
 
     // bool resolve = true;
@@ -95,8 +94,8 @@ int main()
             }
         }
 
-        flatmath::Point2 p1{343.0f, 128.0f};
-        flatmath::Point2 p2{834.0f, 100.0f};
+        flatmath::Vector2 p1{343.0f, 128.0f};
+        flatmath::Vector2 p2{834.0f, 100.0f};
         window.clear();
         physics_world.resolveCollisions();
         for (const auto &rigid_body_ptr : physics_world)
@@ -109,14 +108,14 @@ int main()
     return 0;
 }
 
-void drawSegment(const flatmath::Point2 &p1, const flatmath::Point2 &p2, sf::RenderWindow &window)
+void drawSegment(const flatmath::Vector2 &p1, const flatmath::Vector2 &p2, sf::RenderWindow &window)
 {
     drawRectangleFromPoints(p1, p2, window, 1.f);
 }
 
-void drawRectangleFromPoints(const flatmath::Point2 &p1, const flatmath::Point2 &p2, sf::RenderWindow &window, float width)
+void drawRectangleFromPoints(const flatmath::Vector2 &p1, const flatmath::Vector2 &p2, sf::RenderWindow &window, float width)
 {
-    float length = flatmath::distance(p1, p2);
+    float length = (p1 - p2).modulus();
     float angle = atan2((p2.y - p1.y), (p2.x - p1.x));
     sf::RectangleShape segment{sf::Vector2f{length, width}};
     sf::Transform segment_transform;

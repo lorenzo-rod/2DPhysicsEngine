@@ -18,9 +18,6 @@ class PhysicsWorld
 {
     std::vector<std::unique_ptr<RigidBody>> rigid_bodies_container;
 
-public:
-    void addRigidBody(const RigidBody &rigid_body);
-    void moveRigidBody(int index, const flatmath::Vector2 &vec);
     void getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const;
     bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &normal_arrays,
                                 const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
@@ -31,6 +28,10 @@ public:
     void resolveCollision(CircleBody &circle, RectangleBody &rectangle);
     void resolveCollision(RectangleBody &rectangle, CircleBody &circle);
     void resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b);
+
+public:
+    void addRigidBody(const RigidBody &rigid_body);
+    void moveRigidBody(int index, const flatmath::Vector2 &vec);
     void resolveCollisions();
     iterator begin();
     const_iterator begin() const;

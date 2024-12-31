@@ -1,5 +1,4 @@
 #pragma once
-#include "../math/point2.h"
 #include "../math/vector2.h"
 #include <SFML/Graphics.hpp>
 
@@ -14,6 +13,8 @@ protected:
     std::unique_ptr<sf::Shape> m_shape_ptr;
     int m_scale;
 
+    virtual void loadShape(int scale) = 0;
+
 public:
     RigidBody(float mass, float rotation, const flatmath::Vector2 &position,
               const flatmath::Vector2 &velocity, const flatmath::Vector2 &force,
@@ -27,6 +28,5 @@ public:
     void move(const flatmath::Vector2 &vec);
     void step(float dt);
     void draw(sf::RenderWindow &window);
-    virtual void loadShape(int scale) = 0;
     virtual std::unique_ptr<RigidBody> cloneIntoPtr() const = 0;
 };

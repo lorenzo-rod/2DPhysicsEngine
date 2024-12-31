@@ -6,6 +6,8 @@ class RectangleBody : public RigidBody
     float m_length;
     float m_height;
 
+    void loadShape(int scale) override;
+
 public:
     RectangleBody(float mass, float rotation, const flatmath::Vector2 &position,
                   const flatmath::Vector2 &velocity, const flatmath::Vector2 &force,
@@ -16,6 +18,5 @@ public:
     float getShapeLength() const;
     float getShapeHeight() const;
     void getVertices(std::array<flatmath::Vector2, 4> &vertices) const;
-    void loadShape(int scale) override;
     std::unique_ptr<RigidBody> cloneIntoPtr() const override;
 };
