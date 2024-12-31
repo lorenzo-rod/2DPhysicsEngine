@@ -50,7 +50,7 @@ int main()
     for (int i = 0; i < 2; i++)
     {
         float mass = 1.f;
-        float rotation = -120.f;
+        float rotation = generateRandomFloat(0, 360);
         flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
         flatmath::Vector2 velocity{};
         flatmath::Vector2 force{};
@@ -60,7 +60,7 @@ int main()
         physics_world.addRigidBody(rectangle);
     }
 
-    bool resolve = true;
+    // bool resolve = true;
 
     while (window.isOpen())
     {
@@ -74,35 +74,31 @@ int main()
                 flatmath::Vector2 vec{event.mouseButton.x, event.mouseButton.y};
                 std::cout << vec << std::endl;
             }
-            // if (event.type == sf::Event::KeyPressed)
-            // {
-            //     if (event.key.code == sf::Keyboard::W)
-            //     {
-            //         physics_world.moveRigidBody(0, {0.f, -5.f});
-            //     }
-            //     if (event.key.code == sf::Keyboard::A)
-            //     {
-            //         physics_world.moveRigidBody(0, {-5.f, 0.f});
-            //     }
-            //     if (event.key.code == sf::Keyboard::S)
-            //     {
-            //         physics_world.moveRigidBody(0, {0.f, 5.f});
-            //     }
-            //     if (event.key.code == sf::Keyboard::D)
-            //     {
-            //         physics_world.moveRigidBody(0, {5.f, 0.f});
-            //     }
-            // }
+            if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::W)
+                {
+                    physics_world.moveRigidBody(0, {0.f, -5.f});
+                }
+                if (event.key.code == sf::Keyboard::A)
+                {
+                    physics_world.moveRigidBody(0, {-5.f, 0.f});
+                }
+                if (event.key.code == sf::Keyboard::S)
+                {
+                    physics_world.moveRigidBody(0, {0.f, 5.f});
+                }
+                if (event.key.code == sf::Keyboard::D)
+                {
+                    physics_world.moveRigidBody(0, {5.f, 0.f});
+                }
+            }
         }
 
         flatmath::Point2 p1{343.0f, 128.0f};
         flatmath::Point2 p2{834.0f, 100.0f};
         window.clear();
-        if (resolve)
-        {
-            physics_world.resolveCollisions();
-            resolve = false;
-        }
+        physics_world.resolveCollisions();
         for (const auto &rigid_body_ptr : physics_world)
         {
             rigid_body_ptr->draw(window);

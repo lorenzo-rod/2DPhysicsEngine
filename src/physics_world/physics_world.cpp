@@ -10,13 +10,50 @@ void PhysicsWorld::moveRigidBody(int index, const flatmath::Vector2 &vec)
     rigid_bodies_container.at(index)->move(vec);
 }
 
-void PhysicsWorld::getNormals(std::array<flatmath::Vector2, 4> &normals, const std::array<flatmath::Vector2, 4> &vertices) const
+void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
 {
     for (int i = 0; i < 3; i++)
     {
         normals.at(i) = vertices.at(i) - vertices.at(i + 1);
     }
     normals.at(3) = vertices.at(3) - vertices.at(0);
+}
+
+bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &normal_arrays,
+                                          const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices)
+{
+    bool are_colliding = true;
+    std::array<float, num_sides> projections_a;
+    std::array<float, num_sides> projections_b;
+    float min_projection_a;
+    float max_projection_a;
+    float min_projection_b;
+    float max_projection_b;
+
+    for (const auto &normal_array : normal_arrays)
+    {
+        for (const auto &normal : normal_array)
+        {
+            for (int i = 0; i < num_sides; i++)
+            {
+                projections_a.at(i) = normal * vertices.at(0).at(i);
+                projections_b.at(i) = normal * vertices.at(1).at(i);
+            }
+
+            min_projection_a = *std::min_element(projections_a.begin(), projections_a.end());
+            max_projection_a = *std::max_element(projections_a.begin(), projections_a.end());
+            min_projection_b = *std::min_element(projections_b.begin(), projections_b.end());
+            max_projection_b = *std::max_element(projections_b.begin(), projections_b.end());
+
+            if (min_projection_a > max_projection_b || min_projection_b > max_projection_a)
+            {
+                are_colliding = false;
+                return are_colliding;
+            }
+        }
+    }
+
+    return are_colliding;
 }
 
 iterator PhysicsWorld::begin()
@@ -84,22 +121,10 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle, CircleBody &circle
 
 void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b)
 {
-    std::array<flatmath::Vector2, 4> vertices_a = {flatmath::Vector2{0.0f, 0.0f},
-                                                   flatmath::Vector2{0.0f, 0.0f},
-                                                   flatmath::Vector2{0.0f, 0.0f},
-                                                   flatmath::Vector2{0.0f, 0.0f}};
-    std::array<flatmath::Vector2, 4> vertices_b = {flatmath::Vector2{0.0f, 0.0f},
-                                                   flatmath::Vector2{0.0f, 0.0f},
-                                                   flatmath::Vector2{0.0f, 0.0f},
-                                                   flatmath::Vector2{0.0f, 0.0f}};
-    std::array<flatmath::Vector2, 4> normals_sides_a = {flatmath::Vector2{0.0f, 0.0f},
-                                                        flatmath::Vector2{0.0f, 0.0f},
-                                                        flatmath::Vector2{0.0f, 0.0f},
-                                                        flatmath::Vector2{0.0f, 0.0f}};
-    std::array<flatmath::Vector2, 4> normals_sides_b = {flatmath::Vector2{0.0f, 0.0f},
-                                                        flatmath::Vector2{0.0f, 0.0f},
-                                                        flatmath::Vector2{0.0f, 0.0f},
-                                                        flatmath::Vector2{0.0f, 0.0f}};
+    std::array<flatmath::Vector2, num_sides> vertices_a;
+    std::array<flatmath::Vector2, num_sides> vertices_b;
+    std::array<flatmath::Vector2, num_sides> normals_sides_a;
+    std::array<flatmath::Vector2, num_sides> normals_sides_b;
 
     rectangle_a.getVertices(vertices_a);
     rectangle_b.getVertices(vertices_b);
@@ -107,19 +132,16 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
     getNormals(normals_sides_a, vertices_a);
     getNormals(normals_sides_b, vertices_b);
 
-    // TO DO: Dot product shit
+    if (checkCollisionsWithSAT({normals_sides_a, normals_sides_b}, {vertices_a, vertices_b}))
+    {
+        std::cout << "Object at "
+                  << rectangle_a.getPosition()
+                  << " colliding with object at "
+                  << rectangle_b.getPosition()
+                  << std::endl;
 
-    // for (const auto &vertex : vertices_a)
-    // {
-    //     std::cout << vertex << std::endl;
-    // }
-
-    // std::cout << std::endl;
-
-    // for (const auto &vertex : vertices_b)
-    // {
-    //     std::cout << vertex << std::endl;
-    // }
+        // TO DO: Implement actual collision resolution
+    }
 }
 
 void PhysicsWorld::resolveCollisions()
