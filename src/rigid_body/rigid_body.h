@@ -7,6 +7,7 @@ class RigidBody
 protected:
     float m_mass;
     float m_rotation;
+    float m_rotational_velocity;
     flatmath::Vector2 m_position;
     flatmath::Vector2 m_velocity;
     flatmath::Vector2 m_force;
@@ -16,15 +17,17 @@ protected:
     virtual void loadShape(int scale) = 0;
 
 public:
-    RigidBody(float mass, float rotation, const flatmath::Vector2 &position,
-              const flatmath::Vector2 &velocity, const flatmath::Vector2 &force,
-              int scale);
+    RigidBody(float mass, float rotation, float rotational_velocity,
+              const flatmath::Vector2 &position, const flatmath::Vector2 &velocity,
+              const flatmath::Vector2 &force, int scale);
     float getMass() const;
     float getRotation() const;
+    float getRotationalVelocity() const;
     flatmath::Vector2 getPosition() const;
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
     int getScale() const;
+    void addForce(const flatmath::Vector2 &force);
     void move(const flatmath::Vector2 &vec);
     void step(float dt);
     void draw(sf::RenderWindow &window);

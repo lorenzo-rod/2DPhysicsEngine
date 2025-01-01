@@ -39,7 +39,10 @@ class PhysicsWorld
 public:
     void addRigidBody(const RigidBody &rigid_body);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
+    RigidBody *getRigidBody(int index);
     void resolveCollisions();
+    void draw(sf::RenderWindow &window);
+    void step(float dt);
     iterator begin();
     const_iterator begin() const;
     iterator end();

@@ -3,18 +3,21 @@
 #define TO_RADIANS(X) ((X) * (M_PI / 180))
 
 RectangleBody::RectangleBody(float mass, float rotation,
+                             float rotational_velocity,
                              const flatmath::Vector2 &position,
                              const flatmath::Vector2 &velocity,
                              const flatmath::Vector2 &force,
                              float length, float height,
                              int scale)
-    : RigidBody(mass, rotation, position, velocity, force, scale), m_length(length), m_height(height)
+    : RigidBody(mass, rotation, rotational_velocity, position, velocity, force, scale),
+      m_length(length), m_height(height)
 {
     loadShape(m_scale);
 }
 
 RectangleBody::RectangleBody(const RectangleBody &other) : RigidBody(other.getMass(),
                                                                      other.getRotation(),
+                                                                     other.getRotationalVelocity(),
                                                                      other.getPosition(),
                                                                      other.getVelocity(),
                                                                      other.getForce(),

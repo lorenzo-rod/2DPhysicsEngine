@@ -9,9 +9,10 @@ class RectangleBody : public RigidBody
     void loadShape(int scale) override;
 
 public:
-    RectangleBody(float mass, float rotation, const flatmath::Vector2 &position,
-                  const flatmath::Vector2 &velocity, const flatmath::Vector2 &force,
-                  float length, float height, int scale);
+    RectangleBody(float mass, float rotation, float rotational_velocity,
+                  const flatmath::Vector2 &position, const flatmath::Vector2 &velocity,
+                  const flatmath::Vector2 &force, float length, float height,
+                  int scale);
     RectangleBody(const RectangleBody &other);
     float getLength() const;
     float getHeight() const;

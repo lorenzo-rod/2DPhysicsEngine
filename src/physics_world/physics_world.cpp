@@ -10,6 +10,11 @@ void PhysicsWorld::moveRigidBody(int index, const flatmath::Vector2 &vec)
     rigid_bodies_container.at(index)->move(vec);
 }
 
+RigidBody *PhysicsWorld::getRigidBody(int index)
+{
+    return &(*(rigid_bodies_container.at(index)));
+}
+
 void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
 {
     for (int i = 0; i < (num_sides - 1); i++)
@@ -284,5 +289,21 @@ void PhysicsWorld::resolveCollisions()
                 break;
             resolveCollision(*(rigid_bodies_container.at(i)), *(rigid_bodies_container.at(j)));
         }
+    }
+}
+
+void PhysicsWorld::draw(sf::RenderWindow &window)
+{
+    for (const auto &rigid_body : rigid_bodies_container)
+    {
+        rigid_body->draw(window);
+    }
+}
+
+void PhysicsWorld::step(float dt)
+{
+    for (const auto &rigid_body : rigid_bodies_container)
+    {
+        rigid_body->step(dt);
     }
 }

@@ -39,28 +39,30 @@ int main()
     {
         float mass = 1.f;
         float rotation = generateRandomFloat(0, 360);
+        float rotational_velocity = 0.f;
         flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
         flatmath::Vector2 velocity{};
         flatmath::Vector2 force{};
         float length = 1.f;
         float height = 1.f;
-        RectangleBody rectangle{mass, rotation, position, velocity, force, length, height, 100};
+        RectangleBody rectangle{mass, rotation, rotational_velocity, position, velocity, force, length, height, 100};
         physics_world.addRigidBody(rectangle);
     }
     for (int i = 0; i < 5; i++)
     {
         float mass = 1.f;
         float rotation = 0.f;
+        float rotational_velocity = 0.f;
         flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
         flatmath::Vector2 velocity{};
         flatmath::Vector2 force{};
         float radius = 1.f;
-        CircleBody circle{mass, rotation, position, velocity, force, radius, 100};
+        CircleBody circle{mass, rotation, rotational_velocity, position, velocity, force, radius, 100};
         physics_world.addRigidBody(circle);
     }
 
     // bool resolve = true;
-
+    RigidBody *controllable_rb = physics_world.getRigidBody(0);
     while (window.isOpen())
     {
         sf::Event event;
@@ -77,19 +79,23 @@ int main()
             {
                 if (event.key.code == sf::Keyboard::W)
                 {
-                    physics_world.moveRigidBody(0, {0.f, -5.f});
+                    controllable_rb->addForce({0.0f, -100.f});
+                    // physics_world.moveRigidBody(0, {0.f, -5.f});
                 }
                 if (event.key.code == sf::Keyboard::A)
                 {
-                    physics_world.moveRigidBody(0, {-5.f, 0.f});
+                    controllable_rb->addForce({-100.f, 0.0f});
+                    // physics_world.moveRigidBody(0, {-5.f, 0.f});
                 }
                 if (event.key.code == sf::Keyboard::S)
                 {
-                    physics_world.moveRigidBody(0, {0.f, 5.f});
+                    controllable_rb->addForce({0.0f, 100.f});
+                    // physics_world.moveRigidBody(0, {0.f, 5.f});
                 }
                 if (event.key.code == sf::Keyboard::D)
                 {
-                    physics_world.moveRigidBody(0, {5.f, 0.f});
+                    controllable_rb->addForce({100.f, 0.0f});
+                    // physics_world.moveRigidBody(0, {5.f, 0.f});
                 }
             }
         }
@@ -97,11 +103,9 @@ int main()
         flatmath::Vector2 p1{343.0f, 128.0f};
         flatmath::Vector2 p2{834.0f, 100.0f};
         window.clear();
+        physics_world.step(1.0 / 60);
         physics_world.resolveCollisions();
-        for (const auto &rigid_body_ptr : physics_world)
-        {
-            rigid_body_ptr->draw(window);
-        }
+        physics_world.draw(window);
         window.display();
     }
 
