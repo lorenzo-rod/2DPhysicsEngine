@@ -108,8 +108,8 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, nu
         }
 
         normalized_axis = axis.normalize();
-        projections_circle.at(0) = axis * (circle_position + (normalized_axis * circle.getShapeRadius()));
-        projections_circle.at(1) = axis * (circle_position - (normalized_axis * circle.getShapeRadius()));
+        projections_circle.at(0) = axis * (circle_position + (normalized_axis * circle.getRadius()));
+        projections_circle.at(1) = axis * (circle_position - (normalized_axis * circle.getRadius()));
 
         min_projection_circle = *std::min_element(projections_circle.begin(), projections_circle.end());
         max_projection_circle = *std::max_element(projections_circle.begin(), projections_circle.end());
@@ -203,7 +203,7 @@ void PhysicsWorld::resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_bo
 
 void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
 {
-    float radius_sum = circle_a.getShapeRadius() + circle_b.getShapeRadius();
+    float radius_sum = circle_a.getRadius() + circle_b.getRadius();
     float centers_distance = (circle_a.getPosition() - circle_b.getPosition()).modulus();
     flatmath::Vector2 normal = {0.f, 0.f};
 

@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <SFML/System.hpp>
 #include <iostream>
 #include "math/vector2.h"
 #include "math/vector2.h"
@@ -19,7 +20,10 @@ int main()
     int x_len = 1536;
     int y_len = 864;
     sf::RenderWindow window(sf::VideoMode(x_len, y_len), "SFML works!");
-    window.setFramerateLimit(60);
+    sf::Clock clock;
+    sf::Time delta = sf::seconds(0.01);
+    // window.setFramerateLimit(60);
+    // window.setFramerateLimit(60);
     // sf::RectangleShape shape{sf::Vector2f{100.f, 1.f}};
     // sf::RectangleShape shape2{sf::Vector2f{1.f, 100.f}};
     // sf::CircleShape shape3{100.f};
@@ -43,11 +47,11 @@ int main()
         float restitution{1.f};
         flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
         flatmath::Vector2 velocity{};
-        flatmath::Vector2 force{};
-        float radius = 0.5f;
+        flatmath::Vector2 force{0.0f, 0.f};
+        float radius = 0.5f * 100;
         CircleBody circle{mass, rotation, rotational_velocity,
                           restitution, position, velocity,
-                          force, radius, 100};
+                          force, radius};
         physics_world.addRigidBody(circle);
     }
 
@@ -59,12 +63,12 @@ int main()
         float restitution{1.f};
         flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
         flatmath::Vector2 velocity{};
-        flatmath::Vector2 force{};
-        float length = 1.f;
-        float height = 0.5f;
+        flatmath::Vector2 force{0.0f, 0.f};
+        float length = 1.f * 100;
+        float height = 0.5f * 100;
         RectangleBody rectangle{mass, rotation, rotational_velocity,
                                 restitution, position, velocity,
-                                force, length, height, 100};
+                                force, length, height};
         physics_world.addRigidBody(rectangle);
     }
 
@@ -86,32 +90,36 @@ int main()
             {
                 if (event.key.code == sf::Keyboard::W)
                 {
-                    controllable_rb->addForce({0.0f, -100.f});
+                    controllable_rb->addForce({0.0f, -1.f});
                     // physics_world.moveRigidBody(0, {0.f, -5.f});
                 }
                 if (event.key.code == sf::Keyboard::A)
                 {
-                    controllable_rb->addForce({-100.f, 0.0f});
+                    controllable_rb->addForce({-1.f, 0.0f});
                     // physics_world.moveRigidBody(0, {-5.f, 0.f});
                 }
                 if (event.key.code == sf::Keyboard::S)
                 {
-                    controllable_rb->addForce({0.0f, 100.f});
+                    controllable_rb->addForce({0.0f, 1.f});
                     // physics_world.moveRigidBody(0, {0.f, 5.f});
                 }
                 if (event.key.code == sf::Keyboard::D)
                 {
-                    controllable_rb->addForce({100.f, 0.0f});
+                    controllable_rb->addForce({1.f, 0.0f});
                     // physics_world.moveRigidBody(0, {5.f, 0.f});
                 }
             }
         }
-
-        flatmath::Vector2 p1{343.0f, 128.0f};
-        flatmath::Vector2 p2{834.0f, 100.0f};
+        std::cout << controllable_rb->getVelocity() << std::endl;
         window.clear();
-        physics_world.step(1.0 / 60);
-        physics_world.resolveCollisions();
+        if (clock.getElapsedTime() > delta)
+        {
+            sf::Time dt = clock.getElapsedTime();
+            // std::cout << dt.asSeconds() << std::endl;
+            physics_world.step(delta.asSeconds());
+            physics_world.resolveCollisions();
+            clock.restart();
+        }
         physics_world.draw(window);
         window.display();
     }

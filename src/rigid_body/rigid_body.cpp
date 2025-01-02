@@ -5,16 +5,14 @@ RigidBody::RigidBody(float mass, float rotation,
                      float restitution,
                      const flatmath::Vector2 &position,
                      const flatmath::Vector2 &velocity,
-                     const flatmath::Vector2 &force,
-                     int scale)
+                     const flatmath::Vector2 &force)
     : m_mass(mass),
       m_rotation(rotation),
       m_rotational_velocity(rotational_velocity),
       m_restitution(restitution),
       m_position(position),
       m_velocity(velocity),
-      m_force(force),
-      m_scale(scale)
+      m_force(force)
 {
 }
 float RigidBody::getMass() const
@@ -45,10 +43,6 @@ flatmath::Vector2 RigidBody::getForce() const
 {
     return m_force;
 }
-int RigidBody::getScale() const
-{
-    return m_scale;
-}
 void RigidBody::addForce(const flatmath::Vector2 &force)
 {
     m_force += force;
@@ -67,7 +61,7 @@ void RigidBody::step(float dt)
     m_position += m_velocity * dt;
     m_rotation += m_rotational_velocity * dt;
 
-    m_force = {0.0f, 0.0f};
+    // m_force = {0.0f, 0.0f};
 }
 void RigidBody::draw(sf::RenderWindow &window)
 {

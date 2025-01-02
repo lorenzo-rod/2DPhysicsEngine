@@ -13,15 +13,14 @@ protected:
     flatmath::Vector2 m_velocity;
     flatmath::Vector2 m_force;
     std::unique_ptr<sf::Shape> m_shape_ptr;
-    int m_scale;
 
-    virtual void loadShape(int scale) = 0;
+    virtual void loadShape() = 0;
 
 public:
     RigidBody(float mass, float rotation, float rotational_velocity,
               float restitution, const flatmath::Vector2 &position,
               const flatmath::Vector2 &velocity,
-              const flatmath::Vector2 &force, int scale);
+              const flatmath::Vector2 &force);
     float getMass() const;
     float getRotation() const;
     float getRotationalVelocity() const;
@@ -29,7 +28,6 @@ public:
     flatmath::Vector2 getPosition() const;
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
-    int getScale() const;
     void setVelocity(const flatmath::Vector2 &velocity);
     void addForce(const flatmath::Vector2 &force);
     void move(const flatmath::Vector2 &vec);

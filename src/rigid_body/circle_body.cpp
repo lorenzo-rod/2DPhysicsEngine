@@ -6,10 +6,10 @@ CircleBody::CircleBody(float mass, float rotation,
                        const flatmath::Vector2 &position,
                        const flatmath::Vector2 &velocity,
                        const flatmath::Vector2 &force,
-                       float radius, int scale)
-    : RigidBody(mass, rotation, rotational_velocity, restitution, position, velocity, force, scale), m_radius(radius)
+                       float radius)
+    : RigidBody(mass, rotation, rotational_velocity, restitution, position, velocity, force), m_radius(radius)
 {
-    loadShape(m_scale);
+    loadShape();
 }
 
 CircleBody::CircleBody(const CircleBody &other) : RigidBody(other.getMass(),
@@ -18,11 +18,10 @@ CircleBody::CircleBody(const CircleBody &other) : RigidBody(other.getMass(),
                                                             other.getRestitution(),
                                                             other.getPosition(),
                                                             other.getVelocity(),
-                                                            other.getForce(),
-                                                            other.getScale()),
+                                                            other.getForce()),
                                                   m_radius(other.getRadius())
 {
-    loadShape(m_scale);
+    loadShape();
 }
 
 float CircleBody::getRadius() const
@@ -30,16 +29,10 @@ float CircleBody::getRadius() const
     return m_radius;
 }
 
-float CircleBody::getShapeRadius() const
+void CircleBody::loadShape()
 {
-    return m_radius * m_scale;
-}
-
-void CircleBody::loadShape(int scale)
-{
-    float shape_radius = m_radius * scale;
-    m_shape_ptr = std::make_unique<sf::CircleShape>(shape_radius);
-    m_shape_ptr->setOrigin(shape_radius, shape_radius);
+    m_shape_ptr = std::make_unique<sf::CircleShape>(m_radius);
+    m_shape_ptr->setOrigin(m_radius, m_radius);
 }
 
 std::unique_ptr<RigidBody> CircleBody::cloneIntoPtr() const
