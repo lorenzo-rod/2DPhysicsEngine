@@ -2,11 +2,12 @@
 
 CircleBody::CircleBody(float mass, float rotation,
                        float rotational_velocity,
+                       float restitution,
                        const flatmath::Vector2 &position,
                        const flatmath::Vector2 &velocity,
                        const flatmath::Vector2 &force,
                        float radius, int scale)
-    : RigidBody(mass, rotation, rotational_velocity, position, velocity, force, scale), m_radius(radius)
+    : RigidBody(mass, rotation, rotational_velocity, restitution, position, velocity, force, scale), m_radius(radius)
 {
     loadShape(m_scale);
 }
@@ -14,6 +15,7 @@ CircleBody::CircleBody(float mass, float rotation,
 CircleBody::CircleBody(const CircleBody &other) : RigidBody(other.getMass(),
                                                             other.getRotation(),
                                                             other.getRotationalVelocity(),
+                                                            other.getRestitution(),
                                                             other.getPosition(),
                                                             other.getVelocity(),
                                                             other.getForce(),

@@ -8,8 +8,6 @@
 
 namespace
 {
-    using iterator = std::vector<std::unique_ptr<RigidBody>>::iterator;
-    using const_iterator = std::vector<std::unique_ptr<RigidBody>>::const_iterator;
     constexpr int num_sides = 4;
     constexpr int n_obj_collision = 2;
 }
@@ -30,7 +28,9 @@ class PhysicsWorld
                                 float &distance);
     int getNearestVertexIndex(const flatmath::Vector2 &circle_position,
                               const std::array<flatmath::Vector2, num_sides> &vertices);
-    void resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_body_b);
+    void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
+                            const flatmath::Vector2 &axis, float distance);
+    void resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b);
     void resolveCollision(CircleBody &circle_a, CircleBody &circle_b);
     void resolveCollision(CircleBody &circle, RectangleBody &rectangle);
     void resolveCollision(RectangleBody &rectangle, CircleBody &circle);
@@ -43,8 +43,4 @@ public:
     void resolveCollisions();
     void draw(sf::RenderWindow &window);
     void step(float dt);
-    iterator begin();
-    const_iterator begin() const;
-    iterator end();
-    const_iterator end() const;
 };

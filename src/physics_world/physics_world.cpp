@@ -12,7 +12,7 @@ void PhysicsWorld::moveRigidBody(int index, const flatmath::Vector2 &vec)
 
 RigidBody *PhysicsWorld::getRigidBody(int index)
 {
-    return &(*(rigid_bodies_container.at(index)));
+    return rigid_bodies_container.at(index).get();
 }
 
 void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
@@ -91,10 +91,9 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, nu
     std::array<flatmath::Vector2, num_sides + 1> axes;
     flatmath::Vector2 normalized_axis;
     flatmath::Vector2 circle_position = circle.getPosition();
-    int i;
     distance = std::numeric_limits<float>::max();
 
-    for (i = 0; i < num_sides; i++)
+    for (int i = 0; i < num_sides; i++)
     {
         axes.at(i) = normals.at(i);
     }
@@ -157,32 +156,30 @@ int PhysicsWorld::getNearestVertexIndex(const flatmath::Vector2 &circle_position
     return min_index;
 }
 
-iterator PhysicsWorld::begin()
+void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b, const flatmath::Vector2 &axis, float distance)
 {
-    return rigid_bodies_container.begin();
+    float restitution = std::min(rigid_body_a.getRestitution(), rigid_body_b.getRestitution());
+    flatmath::Vector2 vel_a = rigid_body_a.getVelocity();
+    flatmath::Vector2 vel_b = rigid_body_b.getVelocity();
+    flatmath::Vector2 relative_velocity = vel_a - vel_b;
+    float mass_a = rigid_body_a.getMass();
+    float mass_b = rigid_body_b.getMass();
+    float impulse_magnitude = (-(1 + restitution) * (relative_velocity * axis)) /
+                              (1 / mass_a + 1 / mass_b);
+
+    rigid_body_a.move(-(distance / 2) * axis);
+    rigid_body_b.move((distance / 2) * axis);
+
+    rigid_body_a.setVelocity(vel_a + (impulse_magnitude / mass_a) * axis);
+    rigid_body_b.setVelocity(vel_b - (impulse_magnitude / mass_b) * axis);
 }
 
-const_iterator PhysicsWorld::begin() const
+void PhysicsWorld::resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b)
 {
-    return rigid_bodies_container.begin();
-}
-
-iterator PhysicsWorld::end()
-{
-    return rigid_bodies_container.end();
-}
-
-const_iterator PhysicsWorld::end() const
-{
-    return rigid_bodies_container.end();
-}
-
-void PhysicsWorld::resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_body_b)
-{
-    CircleBody *circle_body_a_ptr = dynamic_cast<CircleBody *>(&rigid_body_a);
-    CircleBody *circle_body_b_ptr = dynamic_cast<CircleBody *>(&rigid_body_b);
-    RectangleBody *rectangle_body_a_ptr = dynamic_cast<RectangleBody *>(&rigid_body_a);
-    RectangleBody *rectangle_body_b_ptr = dynamic_cast<RectangleBody *>(&rigid_body_b);
+    CircleBody *circle_body_a_ptr = dynamic_cast<CircleBody *>(rigid_body_a);
+    CircleBody *circle_body_b_ptr = dynamic_cast<CircleBody *>(rigid_body_b);
+    RectangleBody *rectangle_body_a_ptr = dynamic_cast<RectangleBody *>(rigid_body_a);
+    RectangleBody *rectangle_body_b_ptr = dynamic_cast<RectangleBody *>(rigid_body_b);
 
     if (circle_body_a_ptr && circle_body_b_ptr)
     {
@@ -206,16 +203,15 @@ void PhysicsWorld::resolveCollision(RigidBody &rigid_body_a, RigidBody &rigid_bo
 
 void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
 {
-    float radius_sum = circle_a.getRadius() * circle_a.getScale() + circle_b.getRadius() * circle_b.getScale();
-    float distance = (circle_a.getPosition() - circle_b.getPosition()).modulus();
+    float radius_sum = circle_a.getShapeRadius() + circle_b.getShapeRadius();
+    float centers_distance = (circle_a.getPosition() - circle_b.getPosition()).modulus();
     flatmath::Vector2 normal = {0.f, 0.f};
 
-    if (distance < radius_sum)
+    if (centers_distance < radius_sum)
     {
-        float distance_to_move = radius_sum - distance;
+        float distance_to_move = radius_sum - centers_distance;
         normal = (circle_b.getPosition() - circle_a.getPosition()).normalize();
-        circle_a.move(-(distance_to_move / 2) * normal);
-        circle_b.move((distance_to_move / 2) * normal);
+        resolveWithImpulse(circle_a, circle_b, normal, distance_to_move);
     }
 }
 
@@ -239,8 +235,7 @@ void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle
             axis_for_resolution = -axis_for_resolution;
         }
 
-        circle.move(-(distance / 2) * axis_for_resolution);
-        rectangle.move((distance / 2) * axis_for_resolution);
+        resolveWithImpulse(circle, rectangle, axis_for_resolution, distance);
     }
 }
 
@@ -274,8 +269,7 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
             axis_for_resolution = -axis_for_resolution;
         }
 
-        rectangle_a.move(-(distance / 2) * axis_for_resolution);
-        rectangle_b.move((distance / 2) * axis_for_resolution);
+        resolveWithImpulse(rectangle_a, rectangle_b, axis_for_resolution, distance);
     }
 }
 
@@ -287,7 +281,7 @@ void PhysicsWorld::resolveCollisions()
         {
             if (i == j)
                 break;
-            resolveCollision(*(rigid_bodies_container.at(i)), *(rigid_bodies_container.at(j)));
+            resolveCollision(rigid_bodies_container.at(i).get(), rigid_bodies_container.at(j).get());
         }
     }
 }

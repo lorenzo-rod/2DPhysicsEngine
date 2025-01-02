@@ -4,12 +4,13 @@
 
 RectangleBody::RectangleBody(float mass, float rotation,
                              float rotational_velocity,
+                             float restitution,
                              const flatmath::Vector2 &position,
                              const flatmath::Vector2 &velocity,
                              const flatmath::Vector2 &force,
                              float length, float height,
                              int scale)
-    : RigidBody(mass, rotation, rotational_velocity, position, velocity, force, scale),
+    : RigidBody(mass, rotation, rotational_velocity, restitution, position, velocity, force, scale),
       m_length(length), m_height(height)
 {
     loadShape(m_scale);
@@ -18,6 +19,7 @@ RectangleBody::RectangleBody(float mass, float rotation,
 RectangleBody::RectangleBody(const RectangleBody &other) : RigidBody(other.getMass(),
                                                                      other.getRotation(),
                                                                      other.getRotationalVelocity(),
+                                                                     other.getRestitution(),
                                                                      other.getPosition(),
                                                                      other.getVelocity(),
                                                                      other.getForce(),

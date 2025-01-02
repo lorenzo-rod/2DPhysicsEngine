@@ -8,6 +8,7 @@ protected:
     float m_mass;
     float m_rotation;
     float m_rotational_velocity;
+    float m_restitution;
     flatmath::Vector2 m_position;
     flatmath::Vector2 m_velocity;
     flatmath::Vector2 m_force;
@@ -18,15 +19,18 @@ protected:
 
 public:
     RigidBody(float mass, float rotation, float rotational_velocity,
-              const flatmath::Vector2 &position, const flatmath::Vector2 &velocity,
+              float restitution, const flatmath::Vector2 &position,
+              const flatmath::Vector2 &velocity,
               const flatmath::Vector2 &force, int scale);
     float getMass() const;
     float getRotation() const;
     float getRotationalVelocity() const;
+    float getRestitution() const;
     flatmath::Vector2 getPosition() const;
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
     int getScale() const;
+    void setVelocity(const flatmath::Vector2 &velocity);
     void addForce(const flatmath::Vector2 &force);
     void move(const flatmath::Vector2 &vec);
     void step(float dt);

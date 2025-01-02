@@ -9,8 +9,10 @@ class CircleBody : public RigidBody
 
 public:
     CircleBody(float mass, float rotation, float rotational_velocity,
-               const flatmath::Vector2 &position, const flatmath::Vector2 &velocity,
-               const flatmath::Vector2 &force, float radius, int scale);
+               float restitution, const flatmath::Vector2 &position,
+               const flatmath::Vector2 &velocity,
+               const flatmath::Vector2 &force,
+               float radius, int scale);
     CircleBody(const CircleBody &other);
     float getRadius() const;
     float getShapeRadius() const;

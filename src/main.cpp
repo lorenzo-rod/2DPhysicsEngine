@@ -38,27 +38,34 @@ int main()
     for (int i = 0; i < 5; i++)
     {
         float mass = 1.f;
+        float rotation = 0.f;
+        float rotational_velocity = 0.f;
+        float restitution{1.f};
+        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
+        flatmath::Vector2 velocity{};
+        flatmath::Vector2 force{};
+        float radius = 0.5f;
+        CircleBody circle{mass, rotation, rotational_velocity,
+                          restitution, position, velocity,
+                          force, radius, 100};
+        physics_world.addRigidBody(circle);
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        float mass = 1.f;
         float rotation = generateRandomFloat(0, 360);
         float rotational_velocity = 0.f;
+        float restitution{1.f};
         flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
         flatmath::Vector2 velocity{};
         flatmath::Vector2 force{};
         float length = 1.f;
-        float height = 1.f;
-        RectangleBody rectangle{mass, rotation, rotational_velocity, position, velocity, force, length, height, 100};
+        float height = 0.5f;
+        RectangleBody rectangle{mass, rotation, rotational_velocity,
+                                restitution, position, velocity,
+                                force, length, height, 100};
         physics_world.addRigidBody(rectangle);
-    }
-    for (int i = 0; i < 5; i++)
-    {
-        float mass = 1.f;
-        float rotation = 0.f;
-        float rotational_velocity = 0.f;
-        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
-        flatmath::Vector2 velocity{};
-        flatmath::Vector2 force{};
-        float radius = 1.f;
-        CircleBody circle{mass, rotation, rotational_velocity, position, velocity, force, radius, 100};
-        physics_world.addRigidBody(circle);
     }
 
     // bool resolve = true;

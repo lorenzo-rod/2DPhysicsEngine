@@ -2,6 +2,7 @@
 
 RigidBody::RigidBody(float mass, float rotation,
                      float rotational_velocity,
+                     float restitution,
                      const flatmath::Vector2 &position,
                      const flatmath::Vector2 &velocity,
                      const flatmath::Vector2 &force,
@@ -9,6 +10,7 @@ RigidBody::RigidBody(float mass, float rotation,
     : m_mass(mass),
       m_rotation(rotation),
       m_rotational_velocity(rotational_velocity),
+      m_restitution(restitution),
       m_position(position),
       m_velocity(velocity),
       m_force(force),
@@ -26,6 +28,10 @@ float RigidBody::getRotation() const
 float RigidBody::getRotationalVelocity() const
 {
     return m_rotational_velocity;
+}
+float RigidBody::getRestitution() const
+{
+    return m_restitution;
 }
 flatmath::Vector2 RigidBody::getPosition() const
 {
@@ -46,6 +52,10 @@ int RigidBody::getScale() const
 void RigidBody::addForce(const flatmath::Vector2 &force)
 {
     m_force += force;
+}
+void RigidBody::setVelocity(const flatmath::Vector2 &velocity)
+{
+    m_velocity = velocity;
 }
 void RigidBody::move(const flatmath::Vector2 &vec)
 {

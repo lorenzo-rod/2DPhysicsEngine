@@ -10,9 +10,10 @@ class RectangleBody : public RigidBody
 
 public:
     RectangleBody(float mass, float rotation, float rotational_velocity,
-                  const flatmath::Vector2 &position, const flatmath::Vector2 &velocity,
-                  const flatmath::Vector2 &force, float length, float height,
-                  int scale);
+                  float restitution, const flatmath::Vector2 &position,
+                  const flatmath::Vector2 &velocity,
+                  const flatmath::Vector2 &force, float length,
+                  float height, int scale);
     RectangleBody(const RectangleBody &other);
     float getLength() const;
     float getHeight() const;
