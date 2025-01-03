@@ -38,15 +38,19 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
     float max_projection_b;
     float new_distance;
     distance = std::numeric_limits<float>::max();
+    flatmath::Vector2 normalized_axis;
 
     for (const auto &normal_array : normal_arrays)
     {
         for (const auto &normal : normal_array)
         {
+
+            normalized_axis = normal.normalize();
+
             for (int i = 0; i < num_sides; i++)
             {
-                projections_a.at(i) = normal * vertices.at(0).at(i);
-                projections_b.at(i) = normal * vertices.at(1).at(i);
+                projections_a.at(i) = normalized_axis * vertices.at(0).at(i);
+                projections_b.at(i) = normalized_axis * vertices.at(1).at(i);
             }
 
             min_projection_a = *std::min_element(projections_a.begin(), projections_a.end());
@@ -65,7 +69,7 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
                 if (new_distance < distance)
                 {
                     distance = new_distance;
-                    axis_for_resolution = normal;
+                    axis_for_resolution = normalized_axis;
                 }
             }
         }
@@ -102,14 +106,16 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, nu
 
     for (const auto &axis : axes)
     {
-        for (int i = 0; i < num_sides; i++)
-        {
-            projections_rectangle.at(i) = axis * vertices.at(i);
-        }
 
         normalized_axis = axis.normalize();
-        projections_circle.at(0) = axis * (circle_position + (normalized_axis * circle.getRadius()));
-        projections_circle.at(1) = axis * (circle_position - (normalized_axis * circle.getRadius()));
+
+        for (int i = 0; i < num_sides; i++)
+        {
+            projections_rectangle.at(i) = normalized_axis * vertices.at(i);
+        }
+
+        projections_circle.at(0) = normalized_axis * (circle_position + (normalized_axis * circle.getRadius()));
+        projections_circle.at(1) = normalized_axis * (circle_position - (normalized_axis * circle.getRadius()));
 
         min_projection_circle = *std::min_element(projections_circle.begin(), projections_circle.end());
         max_projection_circle = *std::max_element(projections_circle.begin(), projections_circle.end());
@@ -128,7 +134,7 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, nu
             if (new_distance < distance)
             {
                 distance = new_distance;
-                axis_for_resolution = axis;
+                axis_for_resolution = normalized_axis;
             }
         }
     }
@@ -227,8 +233,6 @@ void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle
 
     if (checkCollisionsWithSAT(normals, vertices, circle, axis_for_resolution, distance))
     {
-        distance /= axis_for_resolution.modulus();
-        axis_for_resolution = axis_for_resolution.normalize();
 
         if (axis_for_resolution * (rectangle.getPosition() - circle.getPosition()) < 0.f)
         {
@@ -261,8 +265,6 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
 
     if (checkCollisionsWithSAT({normals_sides_a, normals_sides_b}, {vertices_a, vertices_b}, axis_for_resolution, distance))
     {
-        distance /= axis_for_resolution.modulus();
-        axis_for_resolution = axis_for_resolution.normalize();
 
         if (axis_for_resolution * (rectangle_b.getPosition() - rectangle_a.getPosition()) < 0.f)
         {

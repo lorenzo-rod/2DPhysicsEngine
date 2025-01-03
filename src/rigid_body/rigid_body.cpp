@@ -61,7 +61,7 @@ void RigidBody::step(float dt)
     m_position += m_velocity * dt;
     m_rotation += m_rotational_velocity * dt;
 
-    // m_force = {0.0f, 0.0f};
+    m_force = {0.0f, 0.0f};
 }
 void RigidBody::draw(sf::RenderWindow &window)
 {
