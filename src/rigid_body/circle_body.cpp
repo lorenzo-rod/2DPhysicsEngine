@@ -1,18 +1,18 @@
 #include "circle_body.h"
 
-CircleBody::CircleBody(float mass, float rotation,
+CircleBody::CircleBody(float inv_mass, float rotation,
                        float rotational_velocity,
                        float restitution,
                        const flatmath::Vector2 &position,
                        const flatmath::Vector2 &velocity,
                        const flatmath::Vector2 &force,
                        float radius)
-    : RigidBody(mass, rotation, rotational_velocity, restitution, position, velocity, force), m_radius(radius)
+    : RigidBody(inv_mass, rotation, rotational_velocity, restitution, position, velocity, force), m_radius(radius)
 {
     loadShape();
 }
 
-CircleBody::CircleBody(const CircleBody &other) : RigidBody(other.getMass(),
+CircleBody::CircleBody(const CircleBody &other) : RigidBody(other.getInvMass(),
                                                             other.getRotation(),
                                                             other.getRotationalVelocity(),
                                                             other.getRestitution(),

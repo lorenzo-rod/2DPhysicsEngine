@@ -5,7 +5,7 @@
 class RigidBody
 {
 protected:
-    float m_mass;
+    float m_inv_mass;
     float m_rotation;
     float m_rotational_velocity;
     float m_restitution;
@@ -17,20 +17,20 @@ protected:
     virtual void loadShape() = 0;
 
 public:
-    RigidBody(float mass, float rotation, float rotational_velocity,
+    RigidBody(float inv_mass, float rotation, float rotational_velocity,
               float restitution, const flatmath::Vector2 &position,
               const flatmath::Vector2 &velocity,
               const flatmath::Vector2 &force);
-    float getMass() const;
+    float getInvMass() const;
     float getRotation() const;
     float getRotationalVelocity() const;
     float getRestitution() const;
     flatmath::Vector2 getPosition() const;
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
-    void setVelocity(const flatmath::Vector2 &velocity);
+    virtual void setVelocity(const flatmath::Vector2 &velocity);
     void addForce(const flatmath::Vector2 &force);
-    void move(const flatmath::Vector2 &vec);
+    virtual void move(const flatmath::Vector2 &vec);
     void step(float dt);
     void draw(sf::RenderWindow &window);
     virtual std::unique_ptr<RigidBody> cloneIntoPtr() const = 0;

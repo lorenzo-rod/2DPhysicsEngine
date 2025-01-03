@@ -1,12 +1,12 @@
 #include "rigid_body.h"
 
-RigidBody::RigidBody(float mass, float rotation,
+RigidBody::RigidBody(float inv_mass, float rotation,
                      float rotational_velocity,
                      float restitution,
                      const flatmath::Vector2 &position,
                      const flatmath::Vector2 &velocity,
                      const flatmath::Vector2 &force)
-    : m_mass(mass),
+    : m_inv_mass(inv_mass),
       m_rotation(rotation),
       m_rotational_velocity(rotational_velocity),
       m_restitution(restitution),
@@ -15,9 +15,9 @@ RigidBody::RigidBody(float mass, float rotation,
       m_force(force)
 {
 }
-float RigidBody::getMass() const
+float RigidBody::getInvMass() const
 {
-    return m_mass;
+    return m_inv_mass;
 }
 float RigidBody::getRotation() const
 {
@@ -45,6 +45,7 @@ flatmath::Vector2 RigidBody::getForce() const
 }
 void RigidBody::addForce(const flatmath::Vector2 &force)
 {
+    m_force = {0.f, 0.f};
     m_force += force;
 }
 void RigidBody::setVelocity(const flatmath::Vector2 &velocity)
@@ -57,11 +58,9 @@ void RigidBody::move(const flatmath::Vector2 &vec)
 }
 void RigidBody::step(float dt)
 {
-    m_velocity += m_force * (1 / m_mass) * dt;
+    m_velocity += m_force * m_inv_mass * dt;
     m_position += m_velocity * dt;
     m_rotation += m_rotational_velocity * dt;
-
-    m_force = {0.0f, 0.0f};
 }
 void RigidBody::draw(sf::RenderWindow &window)
 {

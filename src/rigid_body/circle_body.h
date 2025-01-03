@@ -3,12 +3,13 @@
 
 class CircleBody : public RigidBody
 {
+protected:
     float m_radius;
 
     void loadShape() override;
 
 public:
-    CircleBody(float mass, float rotation, float rotational_velocity,
+    CircleBody(float inv_mass, float rotation, float rotational_velocity,
                float restitution, const flatmath::Vector2 &position,
                const flatmath::Vector2 &velocity,
                const flatmath::Vector2 &force,

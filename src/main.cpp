@@ -5,6 +5,8 @@
 #include "math/vector2.h"
 #include "rigid_body/circle_body.h"
 #include "rigid_body/rectangle_body.h"
+#include "rigid_body/static_circle_body.h"
+#include "rigid_body/static_rectangle_body.h"
 #include <vector>
 #include <random>
 #include "physics_world/physics_world.h"
@@ -41,7 +43,7 @@ int main()
     PhysicsWorld physics_world;
     for (int i = 0; i < 5; i++)
     {
-        float mass = 1.f;
+        float inv_mass = 1.f;
         float rotation = 0.f;
         float rotational_velocity = 0.f;
         float restitution{1.f};
@@ -49,7 +51,7 @@ int main()
         flatmath::Vector2 velocity{};
         flatmath::Vector2 force{0.0f, 0.f};
         float radius = 0.5f * 100;
-        CircleBody circle{mass, rotation, rotational_velocity,
+        CircleBody circle{inv_mass, rotation, rotational_velocity,
                           restitution, position, velocity,
                           force, radius};
         physics_world.addRigidBody(circle);
@@ -57,7 +59,7 @@ int main()
 
     for (int i = 0; i < 5; i++)
     {
-        float mass = 1.f;
+        float inv_mass = 1.f;
         float rotation = generateRandomFloat(0, 360);
         float rotational_velocity = 0.f;
         float restitution{1.f};
@@ -66,12 +68,27 @@ int main()
         flatmath::Vector2 force{0.0f, 0.f};
         float length = 1.f * 100;
         float height = 0.5f * 100;
-        RectangleBody rectangle{mass, rotation, rotational_velocity,
+        RectangleBody rectangle{inv_mass, rotation, rotational_velocity,
                                 restitution, position, velocity,
                                 force, length, height};
         physics_world.addRigidBody(rectangle);
     }
-
+    float rotation = 0.f;
+    float restitution{1.f};
+    flatmath::Vector2 position1{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
+    flatmath::Vector2 position2{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
+    flatmath::Vector2 force{0.0f, 0.f};
+    float radius = 0.5f * 200;
+    StaticCircleBody static_circle{rotation,
+                                   restitution, position1,
+                                   force, radius};
+    physics_world.addRigidBody(static_circle);
+    float length = 1.f * 200;
+    float height = 0.5f * 200;
+    StaticRectangleBody static_rectangle{rotation,
+                                         restitution, position2,
+                                         force, length, height};
+    physics_world.addRigidBody(static_rectangle);
     // bool resolve = true;
     RigidBody *controllable_rb = physics_world.getRigidBody(0);
     while (window.isOpen())
@@ -90,22 +107,22 @@ int main()
             {
                 if (event.key.code == sf::Keyboard::W)
                 {
-                    controllable_rb->addForce({0.0f, -1.f});
+                    controllable_rb->addForce({0.0f, -100.f});
                     // physics_world.moveRigidBody(0, {0.f, -5.f});
                 }
                 if (event.key.code == sf::Keyboard::A)
                 {
-                    controllable_rb->addForce({-1.f, 0.0f});
+                    controllable_rb->addForce({-100.f, 0.0f});
                     // physics_world.moveRigidBody(0, {-5.f, 0.f});
                 }
                 if (event.key.code == sf::Keyboard::S)
                 {
-                    controllable_rb->addForce({0.0f, 1.f});
+                    controllable_rb->addForce({0.0f, 100.f});
                     // physics_world.moveRigidBody(0, {0.f, 5.f});
                 }
                 if (event.key.code == sf::Keyboard::D)
                 {
-                    controllable_rb->addForce({1.f, 0.0f});
+                    controllable_rb->addForce({100.f, 0.0f});
                     // physics_world.moveRigidBody(0, {5.f, 0.f});
                 }
             }

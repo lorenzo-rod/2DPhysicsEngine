@@ -168,16 +168,16 @@ void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_
     flatmath::Vector2 vel_a = rigid_body_a.getVelocity();
     flatmath::Vector2 vel_b = rigid_body_b.getVelocity();
     flatmath::Vector2 relative_velocity = vel_a - vel_b;
-    float mass_a = rigid_body_a.getMass();
-    float mass_b = rigid_body_b.getMass();
+    float inv_mass_a = rigid_body_a.getInvMass();
+    float inv_mass_b = rigid_body_b.getInvMass();
     float impulse_magnitude = (-(1 + restitution) * (relative_velocity * axis)) /
-                              (1 / mass_a + 1 / mass_b);
+                              (inv_mass_a + inv_mass_b);
 
     rigid_body_a.move(-(distance / 2) * axis);
     rigid_body_b.move((distance / 2) * axis);
 
-    rigid_body_a.setVelocity(vel_a + (impulse_magnitude / mass_a) * axis);
-    rigid_body_b.setVelocity(vel_b - (impulse_magnitude / mass_b) * axis);
+    rigid_body_a.setVelocity(vel_a + (impulse_magnitude * inv_mass_a) * axis);
+    rigid_body_b.setVelocity(vel_b - (impulse_magnitude * inv_mass_b) * axis);
 }
 
 void PhysicsWorld::resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b)

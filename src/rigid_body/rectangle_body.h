@@ -3,13 +3,14 @@
 
 class RectangleBody : public RigidBody
 {
+protected:
     float m_length;
     float m_height;
 
     void loadShape() override;
 
 public:
-    RectangleBody(float mass, float rotation, float rotational_velocity,
+    RectangleBody(float inv_mass, float rotation, float rotational_velocity,
                   float restitution, const flatmath::Vector2 &position,
                   const flatmath::Vector2 &velocity,
                   const flatmath::Vector2 &force, float length,
