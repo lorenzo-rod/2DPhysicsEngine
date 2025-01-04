@@ -1,5 +1,11 @@
 #include "circle_body.h"
 
+CircleBody::CircleBody(float radius) : RigidBody(0.f, 0.f, 0.f, 0.f, {0.f, 0.f}, {0.f, 0.f}, {0.f, 0.f}),
+                                       m_radius(radius)
+{
+    loadShape();
+}
+
 CircleBody::CircleBody(float inv_mass, float rotation,
                        float rotational_velocity,
                        float restitution,

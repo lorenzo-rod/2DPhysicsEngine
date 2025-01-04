@@ -1,7 +1,7 @@
 #pragma once
 #include "rigid_body.h"
 
-class CircleBody : public RigidBody
+class CircleBody : virtual public RigidBody
 {
 protected:
     float m_radius;
@@ -9,6 +9,7 @@ protected:
     void loadShape() override;
 
 public:
+    CircleBody(float radius);
     CircleBody(float inv_mass, float rotation, float rotational_velocity,
                float restitution, const flatmath::Vector2 &position,
                const flatmath::Vector2 &velocity,

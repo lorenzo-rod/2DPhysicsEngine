@@ -4,7 +4,8 @@ add_library(RigidBody
     circle_body.cpp
     static_circle_body.cpp
     rectangle_body.cpp
-    static_rectangle_body.cpp)
+    static_rectangle_body.cpp
+    static_body.cpp)
 
 target_link_libraries(RigidBody
     FlatMath)

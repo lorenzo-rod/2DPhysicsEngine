@@ -1,7 +1,7 @@
 #pragma once
 #include "rigid_body.h"
 
-class RectangleBody : public RigidBody
+class RectangleBody : virtual public RigidBody
 {
 protected:
     float m_length;
@@ -10,6 +10,7 @@ protected:
     void loadShape() override;
 
 public:
+    RectangleBody(float length, float height);
     RectangleBody(float inv_mass, float rotation, float rotational_velocity,
                   float restitution, const flatmath::Vector2 &position,
                   const flatmath::Vector2 &velocity,
