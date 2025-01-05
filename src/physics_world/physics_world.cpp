@@ -15,6 +15,11 @@ RigidBody *PhysicsWorld::getRigidBody(int index)
     return rigid_bodies_container.at(index).get();
 }
 
+size_t PhysicsWorld::getNumberOfBodies() const
+{
+    return rigid_bodies_container.size();
+}
+
 void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
 {
     for (int i = 0; i < (num_sides - 1); i++)
@@ -142,6 +147,22 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, nu
     return are_colliding;
 }
 
+bool PhysicsWorld::checkCollisionWithAABB(const std::array<float, RigidBody::num_sides_box> &bounding_box_a,
+                                          const std::array<float, RigidBody::num_sides_box> &bounding_box_b)
+{
+    float min_x_a = bounding_box_a.at(0);
+    float max_x_a = bounding_box_a.at(1);
+    float min_y_a = bounding_box_a.at(2);
+    float max_y_a = bounding_box_a.at(3);
+
+    float min_x_b = bounding_box_b.at(0);
+    float max_x_b = bounding_box_b.at(1);
+    float min_y_b = bounding_box_b.at(2);
+    float max_y_b = bounding_box_b.at(3);
+
+    return (!(min_x_a > max_x_b || min_x_b > max_x_a)) && (!(min_y_a > max_y_b || min_y_b > max_y_a));
+}
+
 int PhysicsWorld::getNearestVertexIndex(const flatmath::Vector2 &circle_position,
                                         const std::array<flatmath::Vector2, num_sides> &vertices)
 {
@@ -230,6 +251,11 @@ void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle
 
     rectangle.getVertices(vertices);
     getNormals(normals, vertices);
+
+    if (!checkCollisionWithAABB(circle.getAxesAlignedBoundingBox(), rectangle.getAxesAlignedBoundingBox()))
+    {
+        return;
+    }
 
     if (checkCollisionsWithSAT(normals, vertices, circle, axis_for_resolution, distance))
     {

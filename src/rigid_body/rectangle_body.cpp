@@ -45,7 +45,7 @@ float RectangleBody::getHeight() const
     return m_height;
 }
 
-void RectangleBody::getVertices(std::array<flatmath::Vector2, 4> &vertices) const
+void RectangleBody::getVertices(std::array<flatmath::Vector2, RigidBody::num_sides_box> &vertices) const
 {
     float cosine = cos(TO_RADIANS(m_rotation));
     float sine = sin(TO_RADIANS(m_rotation));
@@ -63,6 +63,26 @@ void RectangleBody::loadShape()
 {
     m_shape_ptr = std::make_unique<sf::RectangleShape>(sf::Vector2f{m_length, m_height});
     m_shape_ptr->setOrigin(m_length / 2, m_height / 2);
+}
+
+std::array<float, RigidBody::num_sides_box> RectangleBody::getAxesAlignedBoundingBox() const
+{
+    std::array<flatmath::Vector2, num_sides_box> vertices;
+    std::array<float, num_sides_box> vertices_x;
+    std::array<float, num_sides_box> vertices_y;
+    float min_x;
+    float max_x;
+    float min_y;
+    float max_y;
+
+    getVertices(vertices);
+
+    min_x = std::min({vertices.at(0).x, vertices.at(1).x, vertices.at(2).x, vertices.at(3).x});
+    max_x = std::max({vertices.at(0).x, vertices.at(1).x, vertices.at(2).x, vertices.at(3).x});
+    min_y = std::min({vertices.at(0).y, vertices.at(1).y, vertices.at(2).y, vertices.at(3).y});
+    max_y = std::max({vertices.at(0).y, vertices.at(1).y, vertices.at(2).y, vertices.at(3).y});
+
+    return std::array<float, num_sides_box>{min_x, max_x, min_y, max_y};
 }
 
 std::unique_ptr<RigidBody> RectangleBody::cloneIntoPtr() const

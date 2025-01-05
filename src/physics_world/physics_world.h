@@ -26,6 +26,8 @@ class PhysicsWorld
                                 const CircleBody &circle,
                                 flatmath::Vector2 &axis_for_resolution,
                                 float &distance);
+    bool checkCollisionWithAABB(const std::array<float, RigidBody::num_sides_box> &bounding_box_a,
+                                const std::array<float, RigidBody::num_sides_box> &bounding_box_b);
     int getNearestVertexIndex(const flatmath::Vector2 &circle_position,
                               const std::array<flatmath::Vector2, num_sides> &vertices);
     void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
@@ -42,6 +44,7 @@ public:
     void addRigidBody(const RigidBody &rigid_body);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
     RigidBody *getRigidBody(int index);
+    size_t getNumberOfBodies() const;
     void draw(sf::RenderWindow &window);
     void step(float dt);
 };

@@ -17,5 +17,6 @@ public:
                float radius);
     CircleBody(const CircleBody &other);
     float getRadius() const;
+    std::array<float, RigidBody::num_sides_box> getAxesAlignedBoundingBox() const override;
     std::unique_ptr<RigidBody> cloneIntoPtr() const override;
 };

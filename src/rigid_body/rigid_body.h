@@ -17,6 +17,7 @@ protected:
     virtual void loadShape() = 0;
 
 public:
+    static constexpr int num_sides_box = 4;
     RigidBody(float inv_mass, float rotation, float rotational_velocity,
               float restitution, const flatmath::Vector2 &position,
               const flatmath::Vector2 &velocity,
@@ -28,6 +29,7 @@ public:
     flatmath::Vector2 getPosition() const;
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
+    virtual std::array<float, num_sides_box> getAxesAlignedBoundingBox() const = 0;
     virtual void setVelocity(const flatmath::Vector2 &velocity);
     virtual void addVelocity(const flatmath::Vector2 &velocity);
     void setForce(const flatmath::Vector2 &force);

@@ -35,6 +35,14 @@ float CircleBody::getRadius() const
     return m_radius;
 }
 
+std::array<float, RigidBody::num_sides_box> CircleBody::getAxesAlignedBoundingBox() const
+{
+    return std::array<float, num_sides_box>{m_position.x - m_radius,
+                                            m_position.x + m_radius,
+                                            m_position.y - m_radius,
+                                            m_position.y + m_radius};
+}
+
 void CircleBody::loadShape()
 {
     m_shape_ptr = std::make_unique<sf::CircleShape>(m_radius);

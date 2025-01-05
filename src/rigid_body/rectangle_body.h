@@ -19,6 +19,7 @@ public:
     RectangleBody(const RectangleBody &other);
     float getLength() const;
     float getHeight() const;
-    void getVertices(std::array<flatmath::Vector2, 4> &vertices) const;
+    void getVertices(std::array<flatmath::Vector2, num_sides_box> &vertices) const;
+    std::array<float, num_sides_box> getAxesAlignedBoundingBox() const override;
     std::unique_ptr<RigidBody> cloneIntoPtr() const override;
 };
