@@ -300,7 +300,7 @@ void PhysicsWorld::applyGravity(float dt)
 {
     for (auto &rigid_body : rigid_bodies_container)
     {
-        rigid_body->addVelocity(flatmath::Vector2{0.f, 981.f} * dt);
+        rigid_body->addVelocity(flatmath::Vector2{0.f, 1000.f} * dt);
     }
 }
 
