@@ -40,8 +40,10 @@ class PhysicsWorld
 
 public:
     void addRigidBody(const RigidBody &rigid_body);
+    void removeRigidBody(std::vector<std::unique_ptr<RigidBody>>::iterator it);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
     RigidBody *getRigidBody(int index);
     void draw(sf::RenderWindow &window);
     void step(float dt);
+    void step(float dt, int bound_x, int bound_y, int tolerance);
 };

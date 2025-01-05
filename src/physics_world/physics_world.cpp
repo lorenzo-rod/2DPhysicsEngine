@@ -5,6 +5,11 @@ void PhysicsWorld::addRigidBody(const RigidBody &rigid_body)
     rigid_bodies_container.emplace_back(rigid_body.cloneIntoPtr());
 }
 
+void PhysicsWorld::removeRigidBody(std::vector<std::unique_ptr<RigidBody>>::iterator it)
+{
+    rigid_bodies_container.erase(it);
+}
+
 void PhysicsWorld::moveRigidBody(int index, const flatmath::Vector2 &vec)
 {
     rigid_bodies_container.at(index)->move(vec);
@@ -312,4 +317,26 @@ void PhysicsWorld::step(float dt)
     }
     resolveCollisions();
     applyGravity(dt);
+}
+
+void PhysicsWorld::step(float dt, int bound_x, int bound_y, int tolerance)
+{
+    flatmath::Vector2 position;
+    auto it = rigid_bodies_container.begin();
+
+    step(dt);
+
+    while (it != rigid_bodies_container.end())
+    {
+        position = (*it)->getPosition();
+        if (position.x > (bound_x + tolerance) || position.y > (bound_y + tolerance) || position.x < (-tolerance) || position.y < (-tolerance))
+        {
+            it = rigid_bodies_container.erase(it);
+        }
+        else
+        {
+            it++;
+        }
+    }
+    std::cout << "Num objects: " << rigid_bodies_container.size() << std::endl;
 }
