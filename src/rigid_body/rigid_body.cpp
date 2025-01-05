@@ -45,12 +45,20 @@ flatmath::Vector2 RigidBody::getForce() const
 }
 void RigidBody::addForce(const flatmath::Vector2 &force)
 {
-    m_force = {0.f, 0.f};
+    // m_force = {0.f, 0.f};
     m_force += force;
 }
 void RigidBody::setVelocity(const flatmath::Vector2 &velocity)
 {
     m_velocity = velocity;
+}
+void RigidBody::addVelocity(const flatmath::Vector2 &velocity)
+{
+    m_velocity += velocity;
+}
+void RigidBody::setForce(const flatmath::Vector2 &force)
+{
+    m_force = force;
 }
 void RigidBody::move(const flatmath::Vector2 &vec)
 {
@@ -62,7 +70,7 @@ void RigidBody::step(float dt)
     m_position += m_velocity * dt;
     m_rotation += m_rotational_velocity * dt;
 }
-void RigidBody::draw(sf::RenderWindow &window)
+void RigidBody::draw(sf::RenderWindow &window) const
 {
     sf::Transform shape_transform;
     shape_transform.translate(m_position.x, m_position.y);

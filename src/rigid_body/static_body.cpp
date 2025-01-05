@@ -15,6 +15,14 @@ void StaticBody::setVelocity(const flatmath::Vector2 &velocity)
 {
 }
 
+void StaticBody::addVelocity(const flatmath::Vector2 &velocity)
+{
+}
+
+void StaticBody::addForce(const flatmath::Vector2 &force)
+{
+}
+
 void StaticBody::move(const flatmath::Vector2 &vec)
 {
 }

@@ -35,12 +35,13 @@ class PhysicsWorld
     void resolveCollision(CircleBody &circle, RectangleBody &rectangle);
     void resolveCollision(RectangleBody &rectangle, CircleBody &circle);
     void resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b);
+    void resolveCollisions();
+    void applyGravity(float dt);
 
 public:
     void addRigidBody(const RigidBody &rigid_body);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
     RigidBody *getRigidBody(int index);
-    void resolveCollisions();
     void draw(sf::RenderWindow &window);
     void step(float dt);
 };

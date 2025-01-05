@@ -29,9 +29,11 @@ public:
     flatmath::Vector2 getVelocity() const;
     flatmath::Vector2 getForce() const;
     virtual void setVelocity(const flatmath::Vector2 &velocity);
-    void addForce(const flatmath::Vector2 &force);
+    virtual void addVelocity(const flatmath::Vector2 &velocity);
+    void setForce(const flatmath::Vector2 &force);
+    virtual void addForce(const flatmath::Vector2 &force);
     virtual void move(const flatmath::Vector2 &vec);
     void step(float dt);
-    void draw(sf::RenderWindow &window);
+    void draw(sf::RenderWindow &window) const;
     virtual std::unique_ptr<RigidBody> cloneIntoPtr() const = 0;
 };

@@ -296,10 +296,20 @@ void PhysicsWorld::draw(sf::RenderWindow &window)
     }
 }
 
+void PhysicsWorld::applyGravity(float dt)
+{
+    for (auto &rigid_body : rigid_bodies_container)
+    {
+        rigid_body->addVelocity(flatmath::Vector2{0.f, 981.f} * dt);
+    }
+}
+
 void PhysicsWorld::step(float dt)
 {
-    for (const auto &rigid_body : rigid_bodies_container)
+    for (auto &rigid_body : rigid_bodies_container)
     {
         rigid_body->step(dt);
     }
+    resolveCollisions();
+    applyGravity(dt);
 }

@@ -41,13 +41,13 @@ int main()
     // t3.rotate(90);
     // shape3.setOrigin(100.f, 100.f);
     PhysicsWorld physics_world;
-    for (int i = 0; i < 5; i++)
+    for (int i = 0; i < 1; i++)
     {
         float inv_mass = 1.f;
-        float rotation = 0.f;
+        float rotation = 0.5f;
         float rotational_velocity = 0.f;
-        float restitution{1.f};
-        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
+        float restitution{0.5f};
+        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, 20)};
         flatmath::Vector2 velocity{};
         flatmath::Vector2 force{0.0f, 0.f};
         float radius = 0.5f * 100;
@@ -57,22 +57,22 @@ int main()
         physics_world.addRigidBody(circle);
     }
 
-    for (int i = 0; i < 5; i++)
-    {
-        float inv_mass = 1.f;
-        float rotation = generateRandomFloat(0, 360);
-        float rotational_velocity = 0.f;
-        float restitution{1.f};
-        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, y_len)};
-        flatmath::Vector2 velocity{};
-        flatmath::Vector2 force{0.0f, 0.f};
-        float length = 1.f * 100;
-        float height = 0.5f * 100;
-        RectangleBody rectangle{inv_mass, rotation, rotational_velocity,
-                                restitution, position, velocity,
-                                force, length, height};
-        physics_world.addRigidBody(rectangle);
-    }
+    // for (int i = 0; i < 1; i++)
+    // {
+    //     float inv_mass = 1.f;
+    //     float rotation = generateRandomFloat(0, 0);
+    //     float rotational_velocity = 0.f;
+    //     float restitution{0.5f};
+    //     flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, 20)};
+    //     flatmath::Vector2 velocity{};
+    //     flatmath::Vector2 force{0.0f, 0.f};
+    //     float length = 1.f * 100;
+    //     float height = 0.5f * 100;
+    //     RectangleBody rectangle{inv_mass, rotation, rotational_velocity,
+    //                             restitution, position, velocity,
+    //                             force, length, height};
+    //     physics_world.addRigidBody(rectangle);
+    // }
     float rotation = 0.f;
     float restitution{1.f};
     flatmath::Vector2 position1{0, 0};
@@ -144,14 +144,14 @@ int main()
                 }
             }
         }
-        std::cout << controllable_rb->getVelocity() << std::endl;
+        std::cout << controllable_rb->getPosition() << std::endl;
         window.clear();
         if (clock.getElapsedTime() > delta)
         {
             sf::Time dt = clock.getElapsedTime();
             // std::cout << dt.asSeconds() << std::endl;
             physics_world.step(delta.asSeconds());
-            physics_world.resolveCollisions();
+            // physics_world.resolveCollisions();
             clock.restart();
         }
         physics_world.draw(window);
