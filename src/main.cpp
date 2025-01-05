@@ -23,7 +23,21 @@ int main()
     int y_len = 864;
     sf::RenderWindow window(sf::VideoMode(x_len, y_len), "Physics Engine Demo!");
     sf::Clock clock;
+    sf::Clock step_time_clock;
     PhysicsWorld physics_world;
+
+    sf::Font font;
+    if (!font.loadFromFile("./src/Roboto-Regular.ttf"))
+    {
+        std::cerr << "Error loading font\n";
+        return -1;
+    }
+
+    sf::Text text;
+    text.setFont(font);
+    text.setCharacterSize(24);
+    text.setFillColor(sf::Color::White);
+    text.setPosition(30.f, 30.f);
 
     float rotation = 0.f;
     float restitution{0.5f};
@@ -96,8 +110,12 @@ int main()
             }
         }
         window.clear();
+        step_time_clock.restart();
         physics_world.step(clock.restart().asSeconds());
+        text.setString("Step Time: " + std::to_string(step_time_clock.restart().asMicroseconds()) + " us" +
+                       "\n" + "Number of bodies: " + std::to_string(physics_world.getNumberOfBodies()));
         physics_world.draw(window);
+        window.draw(text);
         window.display();
     }
 

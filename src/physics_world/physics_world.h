@@ -42,6 +42,7 @@ public:
     void addRigidBody(const RigidBody &rigid_body);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
     RigidBody *getRigidBody(int index);
+    size_t getNumberOfBodies() const;
     void draw(sf::RenderWindow &window);
     void step(float dt);
 };

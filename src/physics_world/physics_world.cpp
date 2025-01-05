@@ -15,6 +15,11 @@ RigidBody *PhysicsWorld::getRigidBody(int index)
     return rigid_bodies_container.at(index).get();
 }
 
+size_t PhysicsWorld::getNumberOfBodies() const
+{
+    return rigid_bodies_container.size();
+}
+
 void PhysicsWorld::getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
 {
     for (int i = 0; i < (num_sides - 1); i++)
