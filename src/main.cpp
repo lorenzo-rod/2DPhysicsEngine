@@ -41,21 +41,21 @@ int main()
     // t3.rotate(90);
     // shape3.setOrigin(100.f, 100.f);
     PhysicsWorld physics_world;
-    for (int i = 0; i < 1; i++)
-    {
-        float inv_mass = 1.f;
-        float rotation = 0.5f;
-        float rotational_velocity = 0.f;
-        float restitution{0.5f};
-        flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(0, 20)};
-        flatmath::Vector2 velocity{};
-        flatmath::Vector2 force{0.0f, 0.f};
-        float radius = 0.5f * 100;
-        CircleBody circle{inv_mass, rotation, rotational_velocity,
-                          restitution, position, velocity,
-                          force, radius};
-        physics_world.addRigidBody(circle);
-    }
+    // for (int i = 0; i < 1; i++)
+    // {
+    //     float inv_mass = 1.f;
+    //     float rotation = 0.5f;
+    //     float rotational_velocity = 0.f;
+    //     float restitution{0.5f};
+    //     flatmath::Vector2 position{generateRandomFloat(0, x_len), generateRandomFloat(100, 120)};
+    //     flatmath::Vector2 velocity{};
+    //     flatmath::Vector2 force{0.0f, 0.f};
+    //     float radius = 0.5f * 100;
+    //     CircleBody circle{inv_mass, rotation, rotational_velocity,
+    //                       restitution, position, velocity,
+    //                       force, radius};
+    //     physics_world.addRigidBody(circle);
+    // }
 
     // for (int i = 0; i < 1; i++)
     // {
@@ -74,7 +74,7 @@ int main()
     //     physics_world.addRigidBody(rectangle);
     // }
     float rotation = 0.f;
-    float restitution{1.f};
+    float restitution{1.001f};
     flatmath::Vector2 position1{0, 0};
     flatmath::Vector2 position2{x_len, 0};
     flatmath::Vector2 position3{0, y_len};
@@ -109,42 +109,47 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::MouseButtonPressed)
+            // else if (event.type == sf::Event::MouseButtonPressed)
+            // {
+            //     flatmath::Vector2 vec{event.mouseButton.x, event.mouseButton.y};
+            //     std::cout << vec << std::endl;
+            // }
+            if (event.type == sf::Event::MouseButtonPressed)
             {
-                flatmath::Vector2 vec{event.mouseButton.x, event.mouseButton.y};
-                std::cout << vec << std::endl;
-            }
-            if (event.type == sf::Event::KeyPressed)
-            {
-                if (event.key.code == sf::Keyboard::W)
+                if (event.mouseButton.button == sf::Mouse::Left)
                 {
-                    controllable_rb->addForce({0.0f, -100.f});
-                    // physics_world.moveRigidBody(0, {0.f, -5.f});
+                    float inv_mass = 1.f;
+                    float rotation = 0;
+                    float rotational_velocity = 0.f;
+                    float restitution{0.5f};
+                    flatmath::Vector2 position{event.mouseButton.x, event.mouseButton.y};
+                    flatmath::Vector2 velocity{};
+                    flatmath::Vector2 force{0.0f, 0.f};
+                    float length = 1.f * 100;
+                    float height = 0.5f * 100;
+                    RectangleBody rectangle{inv_mass, rotation, rotational_velocity,
+                                            restitution, position, velocity,
+                                            force, length, height};
+                    physics_world.addRigidBody(rectangle);
                 }
-                if (event.key.code == sf::Keyboard::A)
+                else
                 {
-                    controllable_rb->addForce({-100.f, 0.0f});
-                    // physics_world.moveRigidBody(0, {-5.f, 0.f});
-                }
-                if (event.key.code == sf::Keyboard::S)
-                {
-                    controllable_rb->addForce({0.0f, 100.f});
-                    // physics_world.moveRigidBody(0, {0.f, 5.f});
-                }
-                if (event.key.code == sf::Keyboard::D)
-                {
-                    controllable_rb->addForce({100.f, 0.0f});
-                    // physics_world.moveRigidBody(0, {5.f, 0.f});
-                }
-                if (event.key.code == sf::Keyboard::F)
-                {
-                    controllable_rb->setVelocity({0.f, 0.f});
-                    controllable_rb->addForce({0.f, 0.f});
-                    // physics_world.moveRigidBody(0, {5.f, 0.f});
+                    float inv_mass = 1.f;
+                    float rotation = 0.5f;
+                    float rotational_velocity = 0.f;
+                    float restitution{0.5f};
+                    flatmath::Vector2 position{event.mouseButton.x, event.mouseButton.y};
+                    flatmath::Vector2 velocity{};
+                    flatmath::Vector2 force{0.0f, 0.f};
+                    float radius = 0.5f * 100;
+                    CircleBody circle{inv_mass, rotation, rotational_velocity,
+                                      restitution, position, velocity,
+                                      force, radius};
+                    physics_world.addRigidBody(circle);
                 }
             }
         }
-        std::cout << controllable_rb->getPosition() << std::endl;
+        // std::cout << controllable_rb->getPosition() << std::endl;
         window.clear();
         if (clock.getElapsedTime() > delta)
         {
