@@ -167,6 +167,42 @@ int PhysicsWorld::getNearestVertexIndex(const flatmath::Vector2 &circle_position
     return min_index;
 }
 
+void PhysicsWorld::getCollisionPoint(const CircleBody &circle_a, const CircleBody &circle_b, flatmath::Vector2 &point)
+{
+    flatmath::Vector2 pos_a = circle_a.getPosition();
+    flatmath::Vector2 ab = circle_b.getPosition() - pos_a;
+    point = (pos_a + circle_a.getRadius() * ab.normalize());
+}
+
+void PhysicsWorld::getCollisionPoint(const CircleBody &circle, const RectangleBody &rectangle, flatmath::Vector2 &point)
+{
+    std::array<flatmath::Vector2, num_sides> vertices;
+    flatmath::Vector2 cp_min_distance;
+    flatmath::Vector2 cp;
+    float min_squared_distance;
+    float squared_distance;
+
+    rectangle.getVertices(vertices);
+
+    min_squared_distance = flatmath::pointToSegmentSquaredDistance(vertices.at(3),
+                                                                   vertices.at(0),
+                                                                   circle.getPosition(),
+                                                                   cp_min_distance);
+
+    for (int i = 0; i < (num_sides - 1); i++)
+    {
+        squared_distance = flatmath::pointToSegmentSquaredDistance(vertices.at(i),
+                                                                   vertices.at(i + 1),
+                                                                   circle.getPosition(),
+                                                                   cp);
+        if (squared_distance < min_squared_distance)
+        {
+            squared_distance = min_squared_distance;
+            cp_min_distance = cp;
+        }
+    }
+}
+
 void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b, const flatmath::Vector2 &axis, float distance)
 {
     float restitution = std::min(rigid_body_a.getRestitution(), rigid_body_b.getRestitution());
@@ -217,11 +253,13 @@ void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
     float radius_sum = circle_a.getRadius() + circle_b.getRadius();
     float centers_distance = (circle_a.getPosition() - circle_b.getPosition()).modulus();
     flatmath::Vector2 normal = {0.f, 0.f};
+    flatmath::Vector2 cp;
 
     if (centers_distance < radius_sum)
     {
         float distance_to_move = radius_sum - centers_distance;
         normal = (circle_b.getPosition() - circle_a.getPosition()).normalize();
+        getCollisionPoint(circle_a, circle_b, cp);
         resolveWithImpulse(circle_a, circle_b, normal, distance_to_move);
     }
 }
@@ -230,6 +268,7 @@ void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle
 {
     std::array<flatmath::Vector2, num_sides> vertices;
     std::array<flatmath::Vector2, num_sides> normals;
+    flatmath::Vector2 cp;
     flatmath::Vector2 axis_for_resolution;
     float distance;
 
@@ -243,7 +282,7 @@ void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle
         {
             axis_for_resolution = -axis_for_resolution;
         }
-
+        getCollisionPoint(circle, rectangle, cp);
         resolveWithImpulse(circle, rectangle, axis_for_resolution, distance);
     }
 }
@@ -259,6 +298,7 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
     std::array<flatmath::Vector2, num_sides> vertices_b;
     std::array<flatmath::Vector2, num_sides> normals_sides_a;
     std::array<flatmath::Vector2, num_sides> normals_sides_b;
+    flatmath::Vector2 cp;
     flatmath::Vector2 axis_for_resolution;
     float distance;
 
@@ -275,7 +315,6 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
         {
             axis_for_resolution = -axis_for_resolution;
         }
-
         resolveWithImpulse(rectangle_a, rectangle_b, axis_for_resolution, distance);
     }
 }

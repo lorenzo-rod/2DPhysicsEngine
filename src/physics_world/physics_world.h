@@ -3,6 +3,7 @@
 #include "../rigid_body/rigid_body.h"
 #include "../rigid_body/circle_body.h"
 #include "../rigid_body/rectangle_body.h"
+#include "../math/common.h"
 #include <algorithm>
 #include <limits>
 
@@ -28,6 +29,8 @@ class PhysicsWorld
                                 float &distance);
     int getNearestVertexIndex(const flatmath::Vector2 &circle_position,
                               const std::array<flatmath::Vector2, num_sides> &vertices);
+    void getCollisionPoint(const CircleBody &circle_a, const CircleBody &circle_b, flatmath::Vector2 &point);
+    void getCollisionPoint(const CircleBody &circle, const RectangleBody &rectangle, flatmath::Vector2 &point);
     void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
                             const flatmath::Vector2 &axis, float distance);
     void resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b);
