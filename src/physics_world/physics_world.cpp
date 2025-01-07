@@ -177,7 +177,6 @@ void PhysicsWorld::getCollisionPoint(const CircleBody &circle_a, const CircleBod
 void PhysicsWorld::getCollisionPoint(const CircleBody &circle, const RectangleBody &rectangle, flatmath::Vector2 &point)
 {
     std::array<flatmath::Vector2, num_sides> vertices;
-    flatmath::Vector2 cp_min_distance;
     flatmath::Vector2 cp;
     float min_squared_distance;
     float squared_distance;
@@ -187,7 +186,7 @@ void PhysicsWorld::getCollisionPoint(const CircleBody &circle, const RectangleBo
     min_squared_distance = flatmath::pointToSegmentSquaredDistance(vertices.at(3),
                                                                    vertices.at(0),
                                                                    circle.getPosition(),
-                                                                   cp_min_distance);
+                                                                   point);
 
     for (int i = 0; i < (num_sides - 1); i++)
     {
@@ -197,8 +196,8 @@ void PhysicsWorld::getCollisionPoint(const CircleBody &circle, const RectangleBo
                                                                    cp);
         if (squared_distance < min_squared_distance)
         {
-            squared_distance = min_squared_distance;
-            cp_min_distance = cp;
+            min_squared_distance = squared_distance;
+            point = cp;
         }
     }
 }
