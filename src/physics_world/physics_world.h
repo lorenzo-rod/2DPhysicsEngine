@@ -17,8 +17,8 @@ class PhysicsWorld
 {
     std::vector<std::unique_ptr<RigidBody>> rigid_bodies_container;
 
-    void getNormals(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const;
-    bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &normal_arrays,
+    void getEdges(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const;
+    bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &edges_arrays,
                                 const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
                                 flatmath::Vector2 &axis_for_resolution,
                                 float &distance);
@@ -31,6 +31,9 @@ class PhysicsWorld
                               const std::array<flatmath::Vector2, num_sides> &vertices);
     void getCollisionPoint(const CircleBody &circle_a, const CircleBody &circle_b, flatmath::Vector2 &point);
     void getCollisionPoint(const CircleBody &circle, const RectangleBody &rectangle, flatmath::Vector2 &point);
+    void getCollisionPoint(const RectangleBody &rectangle_a, const RectangleBody &rectangle_b,
+                           std::array<flatmath::Vector2, 2> &points,
+                           int &num_cp);
     void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
                             const flatmath::Vector2 &axis, float distance);
     void resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b);
@@ -40,6 +43,7 @@ class PhysicsWorld
     void resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b);
     void resolveCollisions();
     void applyGravity(float dt);
+    void drawPoint(const flatmath::Vector2 &point, sf::RenderWindow &window);
 
 public:
     void addRigidBody(const RigidBody &rigid_body);

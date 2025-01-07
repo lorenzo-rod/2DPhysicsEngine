@@ -14,6 +14,7 @@ namespace flatmath
         Vector2 subtractVector(const Vector2 &other) const;
         Vector2 multiplyVector(float num) const;
         bool equals(const Vector2 &other) const;
+        bool approximatelyEquals(const Vector2 &other, float epsilon);
 
         float modulus() const;
         Vector2 normalize() const;
@@ -24,6 +25,7 @@ namespace flatmath
     };
 
     float crossProduct(const Vector2 &v1, const Vector2 &v2);
+    bool approximatelyEquals(float x1, float x2, float epsilon);
     Vector2 operator+(const Vector2 &v1, const Vector2 &v2);
     Vector2 operator-(const Vector2 &v1, const Vector2 &v2);
     Vector2 operator-(const Vector2 &v);

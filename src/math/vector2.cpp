@@ -22,6 +22,12 @@ namespace flatmath
         return this->x == other.x && this->y == other.y;
     }
 
+    bool Vector2::approximatelyEquals(const Vector2 &other, float epsilon)
+    {
+        return (flatmath::approximatelyEquals(this->x, other.x, epsilon) &&
+                flatmath::approximatelyEquals(this->y, other.y, epsilon));
+    }
+
     float Vector2::modulus() const
     {
         return pow(pow(this->x, 2.f) + pow(this->y, 2.f), 0.5f);

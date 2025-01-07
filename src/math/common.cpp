@@ -39,4 +39,9 @@ namespace flatmath
     {
         return pow((a.x - b.x), 2) + pow((a.y - b.y), 2);
     }
+
+    bool approximatelyEquals(float x1, float x2, float epsilon)
+    {
+        return (x1 > (x2 - epsilon) && (x1 < (x2 + epsilon)));
+    }
 }
