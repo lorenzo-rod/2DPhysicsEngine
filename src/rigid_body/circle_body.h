@@ -7,6 +7,7 @@ protected:
     float m_radius;
 
     void loadShape() override;
+    void loadInertiaMoment() override;
 
 public:
     CircleBody(float radius);
@@ -14,6 +15,7 @@ public:
                float restitution, const flatmath::Vector2 &position,
                const flatmath::Vector2 &velocity,
                const flatmath::Vector2 &force,
+               float torque,
                float radius);
     CircleBody(const CircleBody &other);
     float getRadius() const;
