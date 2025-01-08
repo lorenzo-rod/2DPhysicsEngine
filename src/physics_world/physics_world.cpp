@@ -230,31 +230,22 @@ void PhysicsWorld::getCollisionPoint(const RectangleBody &rectangle_a,
                std::array<flatmath::Vector2, 2>{vertices_b.at(2), vertices_b.at(3)},
                std::array<flatmath::Vector2, 2>{vertices_b.at(3), vertices_b.at(0)}};
 
-    for (const auto &edge : edges_a)
-    {
-        for (const auto &vertex : vertices_b)
-        {
-            sq_distance = flatmath::pointToSegmentSquaredDistance(edge.at(0), edge.at(1), vertex, cp);
-            if (flatmath::approximatelyEquals(sq_distance, min_sq_distance, epsilon))
-            {
-                if (!(cp.approximatelyEquals(points.at(0), epsilon)))
-                {
-                    points.at(1) = cp;
-                    num_cp = 2;
-                }
-            }
-            else if (sq_distance < min_sq_distance)
-            {
-                min_sq_distance = sq_distance;
-                points.at(0) = cp;
-                num_cp = 1;
-            }
-        }
-    }
+    getPossibleCP(edges_a, vertices_b, points, num_cp, min_sq_distance);
+    getPossibleCP(edges_b, vertices_a, points, num_cp, min_sq_distance);
+}
 
-    for (const auto &edge : edges_b)
+void PhysicsWorld::getPossibleCP(const std::array<std::array<flatmath::Vector2, 2>, num_sides> &edges,
+                                 const std::array<flatmath::Vector2, num_sides> &vertices,
+                                 std::array<flatmath::Vector2, 2> &points,
+                                 int &num_cp, float &min_sq_distance)
+{
+    float sq_distance;
+    constexpr float epsilon = 0.0005f;
+    flatmath::Vector2 cp;
+
+    for (const auto &edge : edges)
     {
-        for (const auto &vertex : vertices_a)
+        for (const auto &vertex : vertices)
         {
             sq_distance = flatmath::pointToSegmentSquaredDistance(edge.at(0), edge.at(1), vertex, cp);
             if (flatmath::approximatelyEquals(sq_distance, min_sq_distance, epsilon))

@@ -34,6 +34,10 @@ class PhysicsWorld
     void getCollisionPoint(const RectangleBody &rectangle_a, const RectangleBody &rectangle_b,
                            std::array<flatmath::Vector2, 2> &points,
                            int &num_cp);
+    void getPossibleCP(const std::array<std::array<flatmath::Vector2, 2>, num_sides> &edges,
+                       const std::array<flatmath::Vector2, num_sides> &vertices,
+                       std::array<flatmath::Vector2, 2> &points,
+                       int &num_cp, float &min_sq_distance);
     void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
                             const flatmath::Vector2 &axis, float distance,
                             const flatmath::Vector2 &point);

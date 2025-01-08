@@ -28,7 +28,7 @@ int main()
     PhysicsWorld physics_world;
 
     sf::Font font;
-    if (!font.loadFromFile("./src/Roboto-Regular.ttf"))
+    if (!font.loadFromFile("../../../src/Roboto-Regular.ttf"))
     {
         std::cerr << "Error loading font\n";
         return -1;
