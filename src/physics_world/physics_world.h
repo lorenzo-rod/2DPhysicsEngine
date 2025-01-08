@@ -9,33 +9,32 @@
 
 namespace
 {
-    constexpr int num_sides = 4;
-    constexpr int n_obj_collision = 2;
+    constexpr int num_sides_rect = 4;
 }
 
 class PhysicsWorld
 {
     std::vector<std::unique_ptr<RigidBody>> rigid_bodies_container;
 
-    void getEdges(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const;
-    bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &edges_arrays,
-                                const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
+    void getEdges(std::array<flatmath::Vector2, num_sides_rect> &normals, const std::array<flatmath::Vector2, num_sides_rect> &vertices) const;
+    bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides_rect>, 2> &edges_arrays,
+                                const std::array<std::array<flatmath::Vector2, num_sides_rect>, 2> &vertices,
                                 flatmath::Vector2 &axis_for_resolution,
                                 float &distance);
-    bool checkCollisionsWithSAT(const std::array<flatmath::Vector2, num_sides> &normals,
-                                const std::array<flatmath::Vector2, num_sides> &vertices,
+    bool checkCollisionsWithSAT(const std::array<flatmath::Vector2, num_sides_rect> &normals,
+                                const std::array<flatmath::Vector2, num_sides_rect> &vertices,
                                 const CircleBody &circle,
                                 flatmath::Vector2 &axis_for_resolution,
                                 float &distance);
     int getNearestVertexIndex(const flatmath::Vector2 &circle_position,
-                              const std::array<flatmath::Vector2, num_sides> &vertices);
+                              const std::array<flatmath::Vector2, num_sides_rect> &vertices);
     void getCollisionPoint(const CircleBody &circle_a, const CircleBody &circle_b, flatmath::Vector2 &point);
     void getCollisionPoint(const CircleBody &circle, const RectangleBody &rectangle, flatmath::Vector2 &point);
     void getCollisionPoint(const RectangleBody &rectangle_a, const RectangleBody &rectangle_b,
                            std::array<flatmath::Vector2, 2> &points,
                            int &num_cp);
-    void getPossibleCP(const std::array<std::array<flatmath::Vector2, 2>, num_sides> &edges,
-                       const std::array<flatmath::Vector2, num_sides> &vertices,
+    void getPossibleCP(const std::array<std::array<flatmath::Vector2, 2>, num_sides_rect> &edges,
+                       const std::array<flatmath::Vector2, num_sides_rect> &vertices,
                        std::array<flatmath::Vector2, 2> &points,
                        int &num_cp, float &min_sq_distance);
     void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,

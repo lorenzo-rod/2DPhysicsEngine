@@ -20,23 +20,23 @@ size_t PhysicsWorld::getNumberOfBodies() const
     return rigid_bodies_container.size();
 }
 
-void PhysicsWorld::getEdges(std::array<flatmath::Vector2, num_sides> &normals, const std::array<flatmath::Vector2, num_sides> &vertices) const
+void PhysicsWorld::getEdges(std::array<flatmath::Vector2, num_sides_rect> &normals, const std::array<flatmath::Vector2, num_sides_rect> &vertices) const
 {
-    for (int i = 0; i < (num_sides - 1); i++)
+    for (int i = 0; i < (num_sides_rect - 1); i++)
     {
         normals.at(i) = vertices.at(i) - vertices.at(i + 1);
     }
-    normals.at(num_sides - 1) = vertices.at(num_sides - 1) - vertices.at(0);
+    normals.at(num_sides_rect - 1) = vertices.at(num_sides_rect - 1) - vertices.at(0);
 }
 
-bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &edges_arrays,
-                                          const std::array<std::array<flatmath::Vector2, num_sides>, n_obj_collision> &vertices,
+bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides_rect>, 2> &edges_arrays,
+                                          const std::array<std::array<flatmath::Vector2, num_sides_rect>, 2> &vertices,
                                           flatmath::Vector2 &axis_for_resolution,
                                           float &distance)
 {
     bool are_colliding = true;
-    std::array<float, num_sides> projections_a;
-    std::array<float, num_sides> projections_b;
+    std::array<float, num_sides_rect> projections_a;
+    std::array<float, num_sides_rect> projections_b;
     float min_projection_a;
     float max_projection_a;
     float min_projection_b;
@@ -52,7 +52,7 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
 
             normalized_axis = edge.normalize();
 
-            for (int i = 0; i < num_sides; i++)
+            for (int i = 0; i < num_sides_rect; i++)
             {
                 projections_a.at(i) = normalized_axis * vertices.at(0).at(i);
                 projections_b.at(i) = normalized_axis * vertices.at(1).at(i);
@@ -83,38 +83,38 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<std::array<flatmath::
     return are_colliding;
 }
 
-bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, num_sides> &normals,
-                                          const std::array<flatmath::Vector2, num_sides> &vertices,
+bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, num_sides_rect> &normals,
+                                          const std::array<flatmath::Vector2, num_sides_rect> &vertices,
                                           const CircleBody &circle,
                                           flatmath::Vector2 &axis_for_resolution,
                                           float &distance)
 {
     bool are_colliding = true;
     std::array<float, 2> projections_circle;
-    std::array<float, num_sides> projections_rectangle;
+    std::array<float, num_sides_rect> projections_rectangle;
     float min_projection_circle;
     float max_projection_circle;
     float min_projection_rectangle;
     float max_projection_rectangle;
     float new_distance;
-    std::array<flatmath::Vector2, num_sides + 1> axes;
+    std::array<flatmath::Vector2, num_sides_rect + 1> axes;
     flatmath::Vector2 normalized_axis;
     flatmath::Vector2 circle_position = circle.getPosition();
     distance = std::numeric_limits<float>::max();
 
-    for (int i = 0; i < num_sides; i++)
+    for (int i = 0; i < num_sides_rect; i++)
     {
         axes.at(i) = normals.at(i);
     }
 
-    axes.at(num_sides) = (circle_position - vertices.at(getNearestVertexIndex(circle_position, vertices)));
+    axes.at(num_sides_rect) = (circle_position - vertices.at(getNearestVertexIndex(circle_position, vertices)));
 
     for (const auto &axis : axes)
     {
 
         normalized_axis = axis.normalize();
 
-        for (int i = 0; i < num_sides; i++)
+        for (int i = 0; i < num_sides_rect; i++)
         {
             projections_rectangle.at(i) = normalized_axis * vertices.at(i);
         }
@@ -148,13 +148,13 @@ bool PhysicsWorld::checkCollisionsWithSAT(const std::array<flatmath::Vector2, nu
 }
 
 int PhysicsWorld::getNearestVertexIndex(const flatmath::Vector2 &circle_position,
-                                        const std::array<flatmath::Vector2, num_sides> &vertices)
+                                        const std::array<flatmath::Vector2, num_sides_rect> &vertices)
 {
     int min_index = 0;
     float min_distance = std::numeric_limits<float>::max();
     float distance;
 
-    for (int i = 0; i < num_sides; i++)
+    for (int i = 0; i < num_sides_rect; i++)
     {
         distance = (circle_position - vertices.at(i)).modulus();
         if (distance < min_distance)
@@ -176,7 +176,7 @@ void PhysicsWorld::getCollisionPoint(const CircleBody &circle_a, const CircleBod
 
 void PhysicsWorld::getCollisionPoint(const CircleBody &circle, const RectangleBody &rectangle, flatmath::Vector2 &point)
 {
-    std::array<flatmath::Vector2, num_sides> vertices;
+    std::array<flatmath::Vector2, num_sides_rect> vertices;
     flatmath::Vector2 cp;
     float min_squared_distance;
     float squared_distance;
@@ -188,7 +188,7 @@ void PhysicsWorld::getCollisionPoint(const CircleBody &circle, const RectangleBo
                                                                    circle.getPosition(),
                                                                    point);
 
-    for (int i = 0; i < (num_sides - 1); i++)
+    for (int i = 0; i < (num_sides_rect - 1); i++)
     {
         squared_distance = flatmath::pointToSegmentSquaredDistance(vertices.at(i),
                                                                    vertices.at(i + 1),
@@ -207,10 +207,10 @@ void PhysicsWorld::getCollisionPoint(const RectangleBody &rectangle_a,
                                      std::array<flatmath::Vector2, 2> &points,
                                      int &num_cp)
 {
-    std::array<flatmath::Vector2, num_sides> vertices_a;
-    std::array<flatmath::Vector2, num_sides> vertices_b;
-    std::array<std::array<flatmath::Vector2, 2>, num_sides> edges_a;
-    std::array<std::array<flatmath::Vector2, 2>, num_sides> edges_b;
+    std::array<flatmath::Vector2, num_sides_rect> vertices_a;
+    std::array<flatmath::Vector2, num_sides_rect> vertices_b;
+    std::array<std::array<flatmath::Vector2, 2>, num_sides_rect> edges_a;
+    std::array<std::array<flatmath::Vector2, 2>, num_sides_rect> edges_b;
     flatmath::Vector2 edge;
     flatmath::Vector2 cp;
     float sq_distance;
@@ -234,8 +234,8 @@ void PhysicsWorld::getCollisionPoint(const RectangleBody &rectangle_a,
     getPossibleCP(edges_b, vertices_a, points, num_cp, min_sq_distance);
 }
 
-void PhysicsWorld::getPossibleCP(const std::array<std::array<flatmath::Vector2, 2>, num_sides> &edges,
-                                 const std::array<flatmath::Vector2, num_sides> &vertices,
+void PhysicsWorld::getPossibleCP(const std::array<std::array<flatmath::Vector2, 2>, num_sides_rect> &edges,
+                                 const std::array<flatmath::Vector2, num_sides_rect> &vertices,
                                  std::array<flatmath::Vector2, 2> &points,
                                  int &num_cp, float &min_sq_distance)
 {
@@ -296,7 +296,7 @@ void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_
     flatmath::Vector2 r_bp_perp;
     flatmath::Vector2 vel_ap;
     flatmath::Vector2 vel_bp;
-    flatmath::Vector2 relative_velocity = vel_a - vel_b;
+    flatmath::Vector2 relative_velocity;
     flatmath::Vector2 impulse_vec;
 
     rigid_body_a.move(-(distance / 2) * axis);
@@ -373,8 +373,8 @@ void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
 
 void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle)
 {
-    std::array<flatmath::Vector2, num_sides> vertices;
-    std::array<flatmath::Vector2, num_sides> edges;
+    std::array<flatmath::Vector2, num_sides_rect> vertices;
+    std::array<flatmath::Vector2, num_sides_rect> edges;
     flatmath::Vector2 cp;
     flatmath::Vector2 axis_for_resolution;
     float distance;
@@ -401,10 +401,10 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle, CircleBody &circle
 
 void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &rectangle_b)
 {
-    std::array<flatmath::Vector2, num_sides> vertices_a;
-    std::array<flatmath::Vector2, num_sides> vertices_b;
-    std::array<flatmath::Vector2, num_sides> edges_a;
-    std::array<flatmath::Vector2, num_sides> edges_b;
+    std::array<flatmath::Vector2, num_sides_rect> vertices_a;
+    std::array<flatmath::Vector2, num_sides_rect> vertices_b;
+    std::array<flatmath::Vector2, num_sides_rect> edges_a;
+    std::array<flatmath::Vector2, num_sides_rect> edges_b;
     std::array<flatmath::Vector2, 2> contact_points;
     flatmath::Vector2 axis_for_resolution;
     float distance;
