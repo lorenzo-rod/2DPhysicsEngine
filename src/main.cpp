@@ -41,7 +41,7 @@ int main()
     text.setPosition(30.f, 30.f);
 
     float rotation = 0.f;
-    float restitution{0.5f};
+    float restitution{0.1f};
     flatmath::Vector2 position1{0, 0};
     flatmath::Vector2 position2{x_len, 0};
     flatmath::Vector2 position3{0, y_len};

@@ -278,7 +278,8 @@ void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_
                                       int num_cp)
 {
 
-    float impulse_magnitude = 0.f;
+    float impulse_magnitude;
+    float friction_impulse_magnitude;
     float restitution = std::min(rigid_body_a.getRestitution(), rigid_body_b.getRestitution());
     flatmath::Vector2 vel_a = rigid_body_a.getVelocity();
     flatmath::Vector2 vel_b = rigid_body_b.getVelocity();
@@ -298,6 +299,9 @@ void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_
     flatmath::Vector2 vel_bp;
     flatmath::Vector2 relative_velocity;
     flatmath::Vector2 impulse_vec;
+    flatmath::Vector2 friction_dir;
+    flatmath::Vector2 friction_impulse_vec;
+    float abs_impulse_mag;
 
     rigid_body_a.move(-(distance / 2) * axis);
     rigid_body_b.move((distance / 2) * axis);
@@ -319,11 +323,40 @@ void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_
         impulse_magnitude /= num_cp;
         impulse_vec = impulse_magnitude * axis;
 
-        rigid_body_a.addVelocity((impulse_vec * inv_mass_a));
-        rigid_body_b.addVelocity(-(impulse_vec * inv_mass_b));
-        rigid_body_a.addRotationalVelocity((r_ap.crossProduct(impulse_vec) *
+        friction_dir = (relative_velocity - (relative_velocity * axis) * axis);
+
+        if (friction_dir.approximatelyEquals({0.0f, 0.0f}, 0.01f))
+        {
+            friction_impulse_magnitude = 0.f;
+        }
+        else
+        {
+            friction_dir = friction_dir.normalize();
+            friction_impulse_magnitude = (-(relative_velocity * friction_dir)) /
+                                         ((inv_mass_a + inv_mass_b) +
+                                          (inv_inertia_moment_a * pow((r_ap_perp * friction_dir), 2)) +
+                                          (inv_inertia_moment_b * pow((r_bp_perp * friction_dir), 2)));
+            friction_impulse_magnitude /= num_cp;
+        }
+
+        abs_impulse_mag = std::abs(impulse_magnitude);
+
+        if (std::abs(friction_impulse_magnitude) <= abs_impulse_mag * RigidBody::static_friction)
+        {
+            friction_impulse_vec = friction_impulse_magnitude * friction_dir;
+        }
+        else
+        {
+            friction_impulse_vec = -abs_impulse_mag * friction_dir * RigidBody::dynamic_friction;
+        }
+
+        rigid_body_a.addVelocity((impulse_vec + friction_impulse_vec) * inv_mass_a);
+        rigid_body_b.addVelocity(-(impulse_vec + friction_impulse_vec) * inv_mass_b);
+        rigid_body_a.addRotationalVelocity(((r_ap.crossProduct(impulse_vec) +
+                                             r_ap.crossProduct(friction_impulse_vec)) *
                                             inv_inertia_moment_a));
-        rigid_body_b.addRotationalVelocity(-(r_bp.crossProduct(impulse_vec) *
+        rigid_body_b.addRotationalVelocity(-((r_bp.crossProduct(impulse_vec) +
+                                              r_bp.crossProduct(friction_impulse_vec)) *
                                              inv_inertia_moment_b));
     }
 }

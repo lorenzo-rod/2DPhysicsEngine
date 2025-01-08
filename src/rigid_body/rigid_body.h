@@ -20,6 +20,9 @@ protected:
     virtual void loadInertiaMoment() = 0;
 
 public:
+    static constexpr float static_friction = 0.6f;
+    static constexpr float dynamic_friction = 0.4f;
+
     RigidBody(float inv_mass, float rotation, float rotational_velocity,
               float restitution, const flatmath::Vector2 &position,
               const flatmath::Vector2 &velocity,
