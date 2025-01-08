@@ -70,9 +70,9 @@ namespace flatmath
         this->y -= other.y;
     }
 
-    float crossProduct(const Vector2 &v1, const Vector2 &v2)
+    float Vector2::crossProduct(const Vector2 &other)
     {
-        return v1.x * v2.y - v2.x * v1.y;
+        return this->x * other.y - other.x * this->y;
     }
 
     Vector2 operator*(const Vector2 &v, float num)

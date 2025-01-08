@@ -35,7 +35,12 @@ class PhysicsWorld
                            std::array<flatmath::Vector2, 2> &points,
                            int &num_cp);
     void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
-                            const flatmath::Vector2 &axis, float distance);
+                            const flatmath::Vector2 &axis, float distance,
+                            const flatmath::Vector2 &point);
+    void resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
+                            const flatmath::Vector2 &axis, float distance,
+                            const std::array<flatmath::Vector2, 2> &points,
+                            int num_cp);
     void resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b);
     void resolveCollision(CircleBody &circle_a, CircleBody &circle_b);
     void resolveCollision(CircleBody &circle, RectangleBody &rectangle);

@@ -215,7 +215,7 @@ void PhysicsWorld::getCollisionPoint(const RectangleBody &rectangle_a,
     flatmath::Vector2 cp;
     float sq_distance;
     float min_sq_distance = std::numeric_limits<float>::max();
-    constexpr float epsilon = 0.005f;
+    constexpr float epsilon = 0.0005f;
 
     rectangle_a.getVertices(vertices_a);
     rectangle_b.getVertices(vertices_b);
@@ -275,22 +275,66 @@ void PhysicsWorld::getCollisionPoint(const RectangleBody &rectangle_a,
     }
 }
 
-void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b, const flatmath::Vector2 &axis, float distance)
+void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b,
+                                      const flatmath::Vector2 &axis, float distance,
+                                      const flatmath::Vector2 &point)
 {
+    resolveWithImpulse(rigid_body_a, rigid_body_b, axis, distance, {point, {0.f, 0.f}}, 1);
+}
+
+void PhysicsWorld::resolveWithImpulse(RigidBody &rigid_body_a, RigidBody &rigid_body_b, const flatmath::Vector2 &axis,
+                                      float distance, const std::array<flatmath::Vector2, 2> &points,
+                                      int num_cp)
+{
+
+    float impulse_magnitude = 0.f;
     float restitution = std::min(rigid_body_a.getRestitution(), rigid_body_b.getRestitution());
     flatmath::Vector2 vel_a = rigid_body_a.getVelocity();
     flatmath::Vector2 vel_b = rigid_body_b.getVelocity();
-    flatmath::Vector2 relative_velocity = vel_a - vel_b;
     float inv_mass_a = rigid_body_a.getInvMass();
     float inv_mass_b = rigid_body_b.getInvMass();
-    float impulse_magnitude = (-(1 + restitution) * (relative_velocity * axis)) /
-                              (inv_mass_a + inv_mass_b);
+    float inv_inertia_moment_a = rigid_body_a.getInvInertiaMoment();
+    float inv_inertia_moment_b = rigid_body_b.getInvInertiaMoment();
+    float rot_vel_a = rigid_body_a.getRotationalVelocity();
+    float rot_vel_b = rigid_body_b.getRotationalVelocity();
+    flatmath::Vector2 pos_a = rigid_body_a.getPosition();
+    flatmath::Vector2 pos_b = rigid_body_b.getPosition();
+    flatmath::Vector2 r_ap;
+    flatmath::Vector2 r_bp;
+    flatmath::Vector2 r_ap_perp;
+    flatmath::Vector2 r_bp_perp;
+    flatmath::Vector2 vel_ap;
+    flatmath::Vector2 vel_bp;
+    flatmath::Vector2 relative_velocity = vel_a - vel_b;
+    flatmath::Vector2 impulse_vec;
 
     rigid_body_a.move(-(distance / 2) * axis);
     rigid_body_b.move((distance / 2) * axis);
 
-    rigid_body_a.setVelocity(vel_a + (impulse_magnitude * inv_mass_a) * axis);
-    rigid_body_b.setVelocity(vel_b - (impulse_magnitude * inv_mass_b) * axis);
+    for (int i = 0; i < num_cp; i++)
+    {
+        r_ap = points.at(i) - pos_a;
+        r_bp = points.at(i) - pos_b;
+        r_ap_perp = {-r_ap.y, r_ap.x};
+        r_bp_perp = {-r_bp.y, r_bp.x};
+        vel_ap = vel_a + rot_vel_a * r_ap_perp;
+        vel_bp = vel_b + rot_vel_b * r_bp_perp;
+        relative_velocity = vel_ap - vel_bp;
+        impulse_magnitude = (-(1 + restitution) * (relative_velocity * axis)) /
+                            ((inv_mass_a + inv_mass_b) +
+                             (inv_inertia_moment_a * pow((r_ap_perp * axis), 2)) +
+                             (inv_inertia_moment_b * pow((r_bp_perp * axis), 2)));
+
+        impulse_magnitude /= num_cp;
+        impulse_vec = impulse_magnitude * axis;
+
+        rigid_body_a.addVelocity((impulse_vec * inv_mass_a));
+        rigid_body_b.addVelocity(-(impulse_vec * inv_mass_b));
+        rigid_body_a.addRotationalVelocity((r_ap.crossProduct(impulse_vec) *
+                                            inv_inertia_moment_a));
+        rigid_body_b.addRotationalVelocity(-(r_bp.crossProduct(impulse_vec) *
+                                             inv_inertia_moment_b));
+    }
 }
 
 void PhysicsWorld::resolveCollision(RigidBody *rigid_body_a, RigidBody *rigid_body_b)
@@ -324,7 +368,7 @@ void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
 {
     float radius_sum = circle_a.getRadius() + circle_b.getRadius();
     float centers_distance = (circle_a.getPosition() - circle_b.getPosition()).modulus();
-    flatmath::Vector2 normal = {0.f, 0.f};
+    flatmath::Vector2 normal;
     flatmath::Vector2 cp;
 
     if (centers_distance < radius_sum)
@@ -332,7 +376,7 @@ void PhysicsWorld::resolveCollision(CircleBody &circle_a, CircleBody &circle_b)
         float distance_to_move = radius_sum - centers_distance;
         normal = (circle_b.getPosition() - circle_a.getPosition()).normalize();
         getCollisionPoint(circle_a, circle_b, cp);
-        resolveWithImpulse(circle_a, circle_b, normal, distance_to_move);
+        resolveWithImpulse(circle_a, circle_b, normal, distance_to_move, cp);
     }
 }
 
@@ -355,7 +399,7 @@ void PhysicsWorld::resolveCollision(CircleBody &circle, RectangleBody &rectangle
             axis_for_resolution = -axis_for_resolution;
         }
         getCollisionPoint(circle, rectangle, cp);
-        resolveWithImpulse(circle, rectangle, axis_for_resolution, distance);
+        resolveWithImpulse(circle, rectangle, axis_for_resolution, distance, cp);
     }
 }
 
@@ -389,7 +433,7 @@ void PhysicsWorld::resolveCollision(RectangleBody &rectangle_a, RectangleBody &r
             axis_for_resolution = -axis_for_resolution;
         }
         getCollisionPoint(rectangle_a, rectangle_b, contact_points, num_cp);
-        resolveWithImpulse(rectangle_a, rectangle_b, axis_for_resolution, distance);
+        resolveWithImpulse(rectangle_a, rectangle_b, axis_for_resolution, distance, contact_points, num_cp);
     }
 }
 

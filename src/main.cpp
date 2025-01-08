@@ -10,8 +10,9 @@
 #include <vector>
 #include <random>
 #include "physics_world/physics_world.h"
+#include <cmath>
 
-#define TO_DEGREES(X) ((X) * (180 / M_PI))
+inline float to_radians(float x) { return x * M_PI / 180.f; };
 
 void drawSegment(const flatmath::Vector2 &p1, const flatmath::Vector2 &p2, sf::RenderWindow &window);
 void drawRectangleFromPoints(const flatmath::Vector2 &p1, const flatmath::Vector2 &p2, sf::RenderWindow &window, float width);
@@ -61,12 +62,12 @@ int main()
                                           length, height};
     physics_world.addRigidBody(static_rectangle2);
 
-    StaticRectangleBody static_rectangle3{rotation + 90,
+    StaticRectangleBody static_rectangle3{rotation + to_radians(90),
                                           restitution, position3,
                                           length, height};
     physics_world.addRigidBody(static_rectangle3);
 
-    StaticRectangleBody static_rectangle4{rotation + 90,
+    StaticRectangleBody static_rectangle4{rotation + to_radians(90),
                                           restitution, position3 + flatmath::Vector2{x_len, 0.f},
                                           length, height};
     physics_world.addRigidBody(static_rectangle4);
@@ -97,14 +98,14 @@ int main()
                 {
                     RectangleBody rectangle{inv_mass, rotation, rotational_velocity,
                                             restitution, position, velocity,
-                                            force, length, height};
+                                            force, 0.f, length, height};
                     physics_world.addRigidBody(rectangle);
                 }
                 else
                 {
                     CircleBody circle{inv_mass, rotation, rotational_velocity,
                                       restitution, position, velocity,
-                                      force, radius};
+                                      force, 0.f, radius};
                     physics_world.addRigidBody(circle);
                 }
             }
@@ -136,7 +137,7 @@ void drawRectangleFromPoints(const flatmath::Vector2 &p1, const flatmath::Vector
 
     segment.setOrigin(length / 2, width / 2);
     segment_transform.translate(p1.x + length / 2 * cos(angle), p1.y + length / 2 * sin(angle));
-    segment_transform.rotate(TO_DEGREES(angle));
+    segment_transform.rotate(angle);
     window.draw(segment, segment_transform);
 }
 
