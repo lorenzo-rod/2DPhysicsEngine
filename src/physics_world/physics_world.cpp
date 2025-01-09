@@ -1,7 +1,18 @@
 #include "physics_world.h"
 
+PhysicsWorld::PhysicsWorld() : m_num_times_reserved(1)
+{
+    rigid_bodies_container.reserve(100);
+}
+
 void PhysicsWorld::addRigidBody(const RigidBody &rigid_body)
 {
+    if (rigid_bodies_container.size() + 1 >= rigid_bodies_container.capacity())
+    {
+        m_num_times_reserved++;
+        rigid_bodies_container.reserve(100 * m_num_times_reserved);
+    }
+
     rigid_bodies_container.emplace_back(rigid_body.cloneIntoPtr());
 }
 

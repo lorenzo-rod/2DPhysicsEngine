@@ -15,6 +15,7 @@ namespace
 class PhysicsWorld
 {
     std::vector<std::unique_ptr<RigidBody>> rigid_bodies_container;
+    int m_num_times_reserved;
 
     void getEdges(std::array<flatmath::Vector2, num_sides_rect> &normals, const std::array<flatmath::Vector2, num_sides_rect> &vertices) const;
     bool checkCollisionsWithSAT(const std::array<std::array<flatmath::Vector2, num_sides_rect>, 2> &edges_arrays,
@@ -54,6 +55,7 @@ class PhysicsWorld
     void drawPoint(const flatmath::Vector2 &point, sf::RenderWindow &window);
 
 public:
+    PhysicsWorld();
     void addRigidBody(const RigidBody &rigid_body);
     void moveRigidBody(int index, const flatmath::Vector2 &vec);
     RigidBody *getRigidBody(int index);
