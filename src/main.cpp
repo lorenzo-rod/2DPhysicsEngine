@@ -11,6 +11,7 @@
 #include <random>
 #include "physics_world/physics_world.h"
 #include <cmath>
+#include "rendering/half_color_circle.h"
 
 inline float to_radians(float x) { return x * M_PI / 180.f; };
 
@@ -76,7 +77,7 @@ int main()
     float rotational_velocity = 0.f;
     flatmath::Vector2 velocity{};
     length = 1.f * 100;
-    height = 0.5f * 100;
+    height = length; // 0.5f * 100;
     flatmath::Vector2 position;
     float x_pos;
     float y_pos;
@@ -110,12 +111,17 @@ int main()
                 }
             }
         }
+        // HalfColorCircle g_circle{50.f, 30};
         window.clear();
         step_time_clock.restart();
         physics_world.step(clock.restart().asSeconds());
         text.setString("Step Time: " + std::to_string(step_time_clock.restart().asMicroseconds()) + " us" +
                        "\n" + "Number of bodies: " + std::to_string(physics_world.getNumberOfBodies()));
         physics_world.draw(window);
+        // sf::Transform shape_transform;
+        // shape_transform.translate(500, 500);
+        // shape_transform.rotate(0);
+        // window.draw(g_circle, shape_transform);
         window.draw(text);
         window.display();
     }

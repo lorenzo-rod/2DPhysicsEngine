@@ -43,8 +43,7 @@ float CircleBody::getRadius() const
 
 void CircleBody::loadShape()
 {
-    m_shape_ptr = std::make_unique<sf::CircleShape>(m_radius);
-    m_shape_ptr->setOrigin(m_radius, m_radius);
+    m_shape_ptr = std::make_unique<HalfColorCircle>(m_radius);
 }
 
 void CircleBody::loadInertiaMoment()

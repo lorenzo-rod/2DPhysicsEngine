@@ -1,5 +1,6 @@
 #pragma once
 #include "rigid_body.h"
+#include "../rendering/half_color_circle.h"
 
 class CircleBody : virtual public RigidBody
 {

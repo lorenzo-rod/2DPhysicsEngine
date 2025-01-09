@@ -13,6 +13,7 @@ find_package(OpenGL REQUIRED)
 add_subdirectory(src/math)
 add_subdirectory(src/rigid_body)
 add_subdirectory(src/physics_world)
+add_subdirectory(src/rendering)
 
 target_link_libraries(Main 
     PRIVATE
@@ -29,4 +30,5 @@ target_link_libraries(Main
         FlatMath
         RigidBody
         PhysicsWorld
+        Rendering
 )

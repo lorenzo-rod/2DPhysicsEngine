@@ -57,7 +57,6 @@ float RigidBody::getTorque() const
 }
 void RigidBody::addForce(const flatmath::Vector2 &force)
 {
-    // m_force = {0.f, 0.f};
     m_force += force;
 }
 void RigidBody::setVelocity(const flatmath::Vector2 &velocity)
