@@ -8,7 +8,7 @@ This is a 2D Physics Engine created using C++ and SFML. The project includes a d
 
 - C++ compiler (e.g., g++)
 - CMake
-- SFML library
+- SFML library (version 2.5.1 or higher, but less than 3.0.0)
 
 ### Building the Project
 
@@ -24,9 +24,9 @@ This is a 2D Physics Engine created using C++ and SFML. The project includes a d
     cd build
     ```
 
-3. Run CMake to configure the project:
+3. Run CMake to configure the project in release mode:
     ```sh
-    cmake ..
+    cmake -DCMAKE_BUILD_TYPE=Release ..
     ```
 
 4. Build the project:
