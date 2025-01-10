@@ -1,6 +1,6 @@
 # 2D Physics Engine
 
-This is a 2D Physics Engine created using C++ and SFML. The project includes a demo that can be found in `main.cpp`.
+This is a 2D Physics Engine created using C++ and SFML. The main goal was to get better C++ development skills and learn a little CMake. The project includes a demo that can be found in `main.cpp`.
 
 ## Getting Started
 
