@@ -19,15 +19,15 @@ float generateRandomFloat(float min, float max);
 
 int main()
 {
-    int x_len = 1536;
-    int y_len = 864;
+    constexpr float x_len = 1536.f;
+    constexpr float y_len = 864.f;
     sf::RenderWindow window(sf::VideoMode(x_len, y_len), "Physics Engine Demo!");
     sf::Clock clock;
     sf::Clock step_time_clock;
     PhysicsWorld physics_world;
 
     sf::Font font;
-    if (!font.loadFromFile("../../../src/Roboto-Regular.ttf"))
+    if (!font.loadFromFile("../Roboto-Regular.ttf"))
     {
         std::cerr << "Error loading font\n";
         return -1;

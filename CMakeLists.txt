@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16.0)
 project(2DPhysicsEngine)
 
-add_executable(Main 
+add_executable(2DPhysicsEngineDemo 
     src/main.cpp)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -15,7 +15,7 @@ add_subdirectory(src/rigid_body)
 add_subdirectory(src/physics_world)
 add_subdirectory(src/rendering)
 
-target_link_libraries(Main 
+target_link_libraries(2DPhysicsEngineDemo 
     PRIVATE
         sfml-graphics
         sfml-window
