@@ -19,6 +19,11 @@ RigidBody::RigidBody(float inv_mass, float rotation,
       m_torque(torque)
 {
 }
+
+RigidBody::~RigidBody()
+{
+}
+
 float RigidBody::getInvMass() const
 {
     return m_inv_mass;

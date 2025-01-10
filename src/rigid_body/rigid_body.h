@@ -28,6 +28,7 @@ public:
               const flatmath::Vector2 &velocity,
               const flatmath::Vector2 &force,
               float torque);
+    virtual ~RigidBody();
     float getInvMass() const;
     float getInvInertiaMoment() const;
     float getRotation() const;
